@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+output/*
+!output/pdf/
+output/pdf/*
+!output/pdf/solucionario.pdf
+tmp/

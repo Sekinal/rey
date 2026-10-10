@@ -1,0 +1,27 @@
+name: Verificar y reproducir solucionario
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  reproducir:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.11.15"
+      - name: Instalar LaTeX
+        run: sudo apt-get update && sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils
+      - name: Instalar dependencias fijadas
+        run: uv sync --locked
+      - name: Verificar matemáticas
+        run: uv run --locked pytest
+      - name: Generar solucionario
+        run: uv run --locked feal
+      - name: Comprobar determinismo en el mismo entorno
+        run: |
+          cp output/manifiesto.json /tmp/manifiesto-primero.json
+          uv run --locked feal
+          diff /tmp/manifiesto-primero.json output/manifiesto.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: solucionario-y-resultados
+          path: output/

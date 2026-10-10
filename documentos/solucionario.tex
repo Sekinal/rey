@@ -1,0 +1,234 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,booktabs,graphicx,xcolor,fancyhdr}
+\usepackage[margin=2.2cm,headheight=15pt]{geometry}
+\usepackage[hidelinks]{hyperref}
+\definecolor{azul}{HTML}{165D78}
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Matemáticas Aplicadas · Sistema Fe-Al-O}
+\fancyhead[R]{\small Solucionario reproducible}
+\fancyfoot[L]{\small Modelo binario a 1873 K}\fancyfoot[R]{\thepage}
+\hyphenpenalty=10000\exhyphenpenalty=10000
+\setlength{\emergencystretch}{3em}
+\setlength{\parindent}{0pt}\setlength{\parskip}{7pt}
+\renewcommand{\figurename}{Figura}
+\newcommand{\titulo}[1]{{\Large\bfseries\color{azul}#1}\par\medskip}
+\input{output/tablas/valores.tex}
+\begin{document}
+{\Huge\bfseries\color{azul} Solucionario razonado}\par
+{\Large Series de Taylor y termodinámica de Fe-Al-O}\par
+Primer parcial de Matemáticas Aplicadas · Incisos a--g
+
+\textbf{Alcance.} Reconstrucción editable del solucionario proporcionado. Se conservan su enfoque y sus convenciones numéricas; las tablas y figuras se regeneran desde Python. Se estudia el sistema ternario del artículo [1] y se desarrolla su aproximación binaria Fe-Al. La referencia es un modelo publicado, no una nueva medición experimental.
+
+\titulo{a) Sistema y fenómeno físico-químico}
+En la fabricación de acero, el hierro líquido contiene oxígeno disuelto. El aluminio agregado reacciona con él y forma alúmina sólida:
+\[
+2[\mathrm{Al}]+3[\mathrm{O}]\longrightarrow\mathrm{Al}_2\mathrm{O}_3(s).
+\]
+La reacción reduce el oxígeno disuelto y puede producir inclusiones que deben separarse del metal. El artículo estudia el equilibrio y la no idealidad de la solución, sin calcular velocidades de reacción ni transporte de inclusiones.
+
+La composición no basta para describir la tendencia de una especie a reaccionar. Su actividad es $a_i=x_i\gamma_i$, donde $\gamma_i$ corrige el comportamiento ideal. En escala de Raoult, $\gamma_i<1$ indica una actividad menor que la ideal para igual composición y estado de referencia.
+
+Para alúmina pura, $a_{\mathrm{Al}_2\mathrm{O}_3}=1$. El artículo usa $K_d=a_{\mathrm{Al}}^2a_{\mathrm O}^3$, inverso de la constante de formación. A temperatura fija,
+\[
+a_{\mathrm O}=\left(K_d/a_{\mathrm{Al}}^2\right)^{1/3}.
+\]
+Aumentar la actividad de Al reduce la actividad de O en equilibrio. Convertir esto a concentraciones exige conocer ambos coeficientes de actividad.
+
+\begin{center}\begin{tabular}{ll}\toprule
+Variable & Significado y unidades\\\midrule
+$T$ & Temperatura: 1873 K, aproximadamente 1600 $^\circ$C\\
+$x_i$ & Fracción molar; adimensional, $\sum_i x_i=1$\\
+$a_i,\gamma_i$ & Actividad y coeficiente de actividad; adimensionales\\
+$g^E$ & Energía de Gibbs molar de exceso; J/mol\\
+$R$ & Constante de los gases: 8.314462618 J/(mol K)\\\bottomrule
+\end{tabular}\end{center}
+
+El artículo propone reducir el sistema a Fe-Al cuando la contribución de O es pequeña, por encima de aproximadamente 0.07\,\% en masa de Al en las condiciones estudiadas [1, sección 3.2]. En el binario, con masas molares 26.98 y 55.85 g/mol,
+\[
+x_{\mathrm{Al}}=\frac{0.0007/26.98}{0.0007/26.98+0.9993/55.85}\simeq0.00145.
+\]
+No debe confundirse porcentaje en masa con fracción molar. En adelante $x=x_{\mathrm{Al}}$ y $x_{\mathrm{Fe}}=1-x$.
+
+\newpage
+\titulo{b) Elección de la serie y dominio de cálculo}
+Se desea representar $F(x)=\ln\gamma_{\mathrm{Al}}(x)$ al alejarse de la dilución infinita, $x=0$. Taylor organiza la respuesta suave en una constante, una pendiente y correcciones de curvatura. El logaritmo aparece naturalmente en el potencial químico, $\mu_i=\mu_i^\circ+RT\ln a_i$. No existe periodicidad que motive Fourier.
+
+Se calcula en $0\leq x\leq0.3872$, desde el límite de dilución hasta el último valor de la tabla 2 del artículo. Evaluar el binario cerca de cero no demuestra que allí sea válido despreciar O. Se distinguen el error de simplificación física y el error de truncamiento del modelo.
+
+\titulo{c) Derivación explícita de los coeficientes}
+La ecuación (16) y la tabla 1 de [1] proporcionan
+\[
+f(x)=\frac{g^E}{RT}=x(1-x)[A+B(1-2x)],\qquad A=-4.6095,\ B=0.741.
+\]
+Aquí ``cúbico'' describe el grado del polinomio en composición. Si $n=n_{\mathrm{Fe}}+n_{\mathrm{Al}}$ y $G^E=nRTf(x)$, entonces
+\[
+\left(\frac{\partial x}{\partial n_{\mathrm{Al}}}\right)_{n_{\mathrm{Fe}}}=\frac{1-x}{n},\qquad
+\left(\frac{\partial x}{\partial n_{\mathrm{Fe}}}\right)_{n_{\mathrm{Al}}}=-\frac{x}{n}.
+\]
+La derivación parcial molar, a temperatura y presión constantes, da
+\[
+\ln\gamma_{\mathrm{Al}}=f+(1-x)f',\qquad \ln\gamma_{\mathrm{Fe}}=f-xf'.
+\]
+Expandiendo y agrupando:
+\begin{align*}
+f&=(A+B)x-(A+3B)x^2+2Bx^3,\\
+f'&=(A+B)-2(A+3B)x+6Bx^2,\\
+F_{\mathrm{RK}}&=(A+B)+(-2A-6B)x+(A+9B)x^2-4Bx^3\\
+&=-3.8685+4.773x+2.0595x^2-2.964x^3.
+\end{align*}
+La fórmula $F(x)=\sum_{k=0}^N F^{(k)}(0)x^k/k!+R_N(x)$ permite identificar:
+\begin{center}\begin{tabular}{rrr}\toprule
+$k$ & $F^{(k)}(0)$ & $c_k=F^{(k)}(0)/k!$\\\midrule
+0 & $-3.8685$ & $-3.8685$\\
+1 & $4.773$ & $4.773$\\
+2 & $4.119$ & $2.0595$\\
+3 & $-17.784$ & $-2.964$\\\bottomrule
+\end{tabular}\end{center}
+Los parámetros de Wagner ya incluyen los factoriales: $\varepsilon=c_1$, $\rho=c_2$, $\theta=c_3$. Para reproducir la ecuación (26), se usa el valor publicado $\rho=2.06$ y se define
+\[
+\boxed{F_3=-3.8685+4.773x+2.06x^2-2.964x^3.}
+\]
+La diferencia es $F_3-F_{\mathrm{RK}}=0.0005x^2$, con máximo $7.496192\times10^{-5}$ en el intervalo. Las derivadas de orden cuatro y superior del modelo cúbico son cero: recuperarlo con cuatro términos es una identidad, no evidencia de que la función física desconocida sea cúbica.
+
+\newpage
+\titulo{c) Consistencia termodinámica del hierro}
+A temperatura y presión constantes, Gibbs-Duhem exige
+\[
+(1-x)H'(x)+xF'(x)=0,\qquad H=\ln\gamma_{\mathrm{Fe}}.
+\]
+Para $P_N=\sum_{k=0}^Nc_kx^k$ y hierro puro como frontera, $H_N(0)=0$:
+\[
+H_N(x)=-\int_0^x\frac{t}{1-t}P_N'(t)\,dt.
+\]
+La identidad $t^k/(1-t)=1/(1-t)-\sum_{j=0}^{k-1}t^j$ permite integrar término a término:
+\[
+\boxed{H_N(x)=\sum_{k=1}^Nkc_k\left[\ln(1-x)+\sum_{j=1}^k\frac{x^j}{j}\right].}
+\]
+En particular,
+\begin{align*}
+H_3={}&4.773[\ln(1-x)+x]+4.12[\ln(1-x)+x+x^2/2]\\
+&-8.892[\ln(1-x)+x+x^2/2+x^3/3]\\
+={}&0.001[\ln(1-x)+x]-2.386x^2-2.964x^3.
+\end{align*}
+Con $c_2=2.0595$, el logaritmo se cancela exactamente y queda $H_{\mathrm{RK}}=-2.3865x^2-2.964x^3$. Para cada truncamiento se calcula la energía consistente
+\[
+g_N^E=RT[xP_N+(1-x)H_N].
+\]
+No se combina un truncamiento de Al con un modelo de Fe de orden distinto.
+
+\titulo{d) Aproximaciones y error de truncamiento}
+Se conservan los mismos coeficientes, sin reajustarlos:
+\begin{align*}
+P_0&=-3.8685,&P_1&=P_0+4.773x,\\
+P_2&=P_1+2.06x^2,&P_3&=P_2-2.964x^3=F_3.
+\end{align*}
+Son uno, dos, tres y cuatro términos, contando la constante. En el intervalo estudiado, los errores absolutos frente a $F_3$ son
+\[
+E_0=4.773x+2.06x^2-2.964x^3,\quad E_1=x^2(2.06-2.964x),
+\]
+\[
+E_2=2.964x^3,\qquad E_3=0.
+\]
+Cerca de cero, $E_1=O(x^2)$ y $E_2=O(x^3)$. Sin embargo,
+\[
+E_2>E_1\quad\text{si}\quad x>\frac{2.06}{2(2.964)}\simeq0.34750.
+\]
+El término cuadrático positivo y el cúbico negativo se compensan parcialmente. Retener solo el primero puede empeorar el error puntual a concentraciones altas. Este $P_2$ es un truncamiento con coeficientes fijos, distinto del formalismo cuadrático independiente comparado por los autores.
+
+\newpage
+\titulo{d) Comparación numérica independiente}
+Se evalúan $M=10\,001$ puntos uniformes, incluyendo ambos extremos:
+\[
+E_{\max}=\max_j|P_N(x_j)-F_3(x_j)|,\quad
+\mathrm{RMSE}=\sqrt{\frac{1}{M}\sum_{j=1}^{M}[P_N(x_j)-F_3(x_j)]^2}.
+\]
+El error relativo del coeficiente, distinto del error del logaritmo, es
+\[
+e_{\gamma,N}=100\left|\exp(P_N-F_3)-1\right|.
+\]
+\begin{center}\input{output/tablas/metricas.tex}\end{center}
+El RMSE disminuye de orden 1 a 2 aproximadamente un 13.0\,\%, pero el máximo absoluto aumenta un 25.8\,\%. Mejorar el promedio puede coexistir con perder precisión cerca del extremo superior.
+
+\textbf{Valores en composiciones seleccionadas}
+\begin{center}\input{output/tablas/composiciones.tex}\end{center}
+\begin{figure}[h!]\centering
+\includegraphics[width=\linewidth]{output/figuras/actividad.pdf}
+\caption{Logaritmo y coeficiente de actividad calculados desde el modelo. El orden 3 coincide con la referencia. Las curvas no son datos experimentales.}
+\end{figure}
+En $x=0.3872$, $\gamma_{\mathrm{Al}}=\GammaFinal$. El lineal subestima el coeficiente en 12.78\,\%, mientras que el cuadrático lo sobreestima en 18.78\,\%. El error nulo del cúbico solo se refiere a la referencia elegida.
+
+\newpage
+\titulo{e) Programa propio y lectura de las gráficas}
+\texttt{src/feal/modelo.py} implementa las series, la recurrencia de la exponencial y la integración analítica de Gibbs-Duhem. \texttt{src/feal/reproducir.py} genera CSV, tablas LaTeX, figuras y este PDF. Las tablas y los valores principales se insertan automáticamente en el documento.
+
+Para evitar pérdida de precisión cerca de cero, $P_N-F_3$ se calcula con los términos omitidos, y $e^\Delta-1$ con \texttt{expm1}. Para $x<0.1$, la combinación $\ln(1-x)+\sum_{j=1}^kx^j/j$ se evalúa mediante su cola negativa $-\sum_{j=k+1}^{32}x^j/j$, cuyo error absoluto omitido es menor que $10^{-32}$. Fuera de esa región se usa \texttt{log1p}.
+
+\begin{figure}[h!]\centering
+\includegraphics[width=\linewidth]{output/figuras/errores.pdf}
+\caption{Izquierda: error relativo del coeficiente; el eje se limita a 21\,\% para distinguir órdenes 1 y 2 (el orden 0 sale del recuadro). Derecha: error del logaritmo en escala doblemente logarítmica; la pendiente local identifica el orden asintótico. El orden 3 tiene error cero y no se representa en escala logarítmica.}
+\end{figure}
+Con tolerancia de 1\,\% en $\gamma_{\mathrm{Al}}$, los intervalos contiguos desde cero terminan aproximadamente en $x=\LimiteLineal$ para orden 1 y $x=\LimiteCuadratico$ para orden 2. Se calculan por bisección, sin depender del espaciamiento de la malla de las métricas.
+
+\textbf{Extensión: una serie genuinamente infinita.} Aunque $F_3$ es finito, $\gamma_{\mathrm{ref}}=\exp(F_3)=\sum_{n=0}^{\infty}b_nx^n$ tiene una serie infinita. De $\gamma'=F_3'\gamma$, igualando potencias:
+\[
+b_0=e^{c_0},\qquad b_n=\frac{1}{n}\sum_{k=1}^{\min(3,n)}kc_kb_{n-k}.
+\]
+\begin{center}\input{output/tablas/gamma.tex}\end{center}
+Estos son errores de la expansión directa de $\gamma$, distinta de $\exp(P_N)$. La exponencial de un polinomio es una función entera: su Taylor converge para todo $x$ finito. Esto no amplía la validez física del modelo.
+
+\newpage
+\titulo{f) Interpretación físico-fenomenológica}
+\begin{figure}[h!]\centering
+\includegraphics[width=\linewidth]{output/figuras/termodinamica.pdf}
+\caption{Coeficiente del hierro y energía de exceso obtenidos con Gibbs-Duhem para cada orden retenido.}
+\end{figure}
+\textbf{Actividad del aluminio y respuesta del hierro.} $F_3$ aumenta desde $-3.8685$ hasta aproximadamente $-1.883613$; $\gamma_{\mathrm{Al}}$ pasa de 0.02089 a \GammaFinal. La actividad $a_{\mathrm{Al}}=x\exp(F_3)$ alcanza \ActividadFinal. La desviación respecto de la idealidad sigue siendo negativa: el aumento de $\gamma$ no implica $\gamma>1$.
+
+En todo el intervalo, $F_3'=4.773+4.12x-8.892x^2>0$. Por Gibbs-Duhem, $H_3'=-xF_3'/(1-x)<0$ para $x>0$: el coeficiente del hierro disminuye al aumentar Al. En el extremo, $\ln\gamma_{\mathrm{Fe}}=\HierroFinal$ y $\gamma_{\mathrm{Fe}}\simeq0.58867$.
+
+\textbf{Energía de exceso.} Se obtiene $g_3^E(0.3872)=\EnergiaFinal$ kJ/mol. Su signo negativo significa una energía de Gibbs menor que la de una solución ideal a igual composición y con los mismos estados de referencia. No equivale al calor liberado, pues $g^E=h^E-Ts^E$ contiene contribuciones entálpicas y entrópicas.
+
+El error máximo de $g^E$ frente al cúbico es \ErrorEnergiaLineal\ J/mol para orden 1 y \ErrorEnergiaCuadratico\ J/mol para orden 2. La calidad depende de la propiedad: $g^E$ combina ambas especies y $\gamma_{\mathrm{Al}}$ aplica una exponencial a un solo logaritmo.
+
+La estabilidad local depende de la curvatura de la energía total de mezcla:
+\[
+\frac{d^2g_{\mathrm{mezcla}}}{dx^2}=RT\left[\frac1x+\frac1{1-x}+\frac{F_3'(x)}{1-x}\right]>0
+\quad (0<x\leq0.3872).
+\]
+Esto indica estabilidad local frente a pequeñas fluctuaciones de composición dentro del modelo líquido. No sustituye una comparación global con otras fases o compuestos.
+
+\textbf{Ventajas y límites.} Taylor ofrece una expresión económica, derivable y fácil de programar. Sus coeficientes son efectivos: sus signos no identifican de forma única pares atómicos ni mecanismos microscópicos. El binario no predice por sí solo el equilibrio completo de desoxidación. Los parámetros corresponden a 1873 K y no se transfieren automáticamente a otras temperaturas.
+
+\newpage
+\titulo{g) Conclusiones propias}
+\begin{enumerate}
+\item La expansión cuantifica cómo la composición modifica la no idealidad del aluminio en hierro líquido. La pendiente positiva explica el aumento de su coeficiente de actividad; el término cúbico negativo modera ese aumento.
+\item Pasar de dos a tres términos mejora el error cuadrático medio, pero eleva el máximo error relativo en $\gamma_{\mathrm{Al}}$ de 12.78\,\% a 18.78\,\%. La compensación entre términos impide juzgar una aproximación solo por su orden.
+\item Con tolerancia de 1\,\%, el lineal es suficiente hasta aproximadamente $x=\LimiteLineal$ y el cuadrático hasta $x=\LimiteCuadratico$. Para cubrir el intervalo completo se conservan los cuatro términos. Estos límites no certifican exactitud experimental.
+\item Gibbs-Duhem vincula necesariamente Fe y Al. Derivar el hierro para cada truncamiento permite calcular $g^E$ con consistencia termodinámica.
+\item La aproximación binaria es pertinente cuando la contribución de O es pequeña. Una serie precisa no corrige una simplificación física inapropiada en la región donde Al y O interactúan fuertemente.
+\end{enumerate}
+
+\textbf{Lectura crítica.} El error de truncamiento se conoce respecto de $F_3$; no es error experimental. El PDF del artículo no incluye una tabla completa de mediciones EMF con incertidumbres. No se inventan observaciones ni se afirma realizar un ajuste experimental independiente. La tabla 2 comprueba la escala de los resultados, aunque sus últimos decimales no se reproducen exactamente con todos los valores impresos.
+
+No se extrapola hasta aluminio puro: los coeficientes redondeados dan $F_3(1)=0.0005$ y un término $0.001\ln(1-x)$ en $H_3$. Con los coeficientes exactos derivados de Redlich-Kister se recupera $F_{\mathrm{RK}}(1)=0$ y se cancela el logaritmo.
+
+\textbf{Reproducción y validación.} Desde la raíz del repositorio, con \texttt{uv} y TeX Live instalados:
+\begin{verbatim}
+uv sync --locked
+uv run --locked pytest
+uv run --locked feal
+\end{verbatim}
+\texttt{uv.lock} fija las dependencias de Python y \texttt{.python-version} fija el intérprete. Las pruebas comprueban derivación simbólica, Gibbs-Duhem, integración numérica independiente, valores de referencia y recurrencia. El README documenta requisitos de LaTeX y límites de la reproducibilidad binaria entre plataformas.
+
+\textbf{Fuentes utilizadas}
+
+[1] Ishfaq, M.; Pande, M. M. (2025). \textit{Thermodynamic analysis of Fe-Al-O system using Redlich-Kister (R-K) polynomial and Wagner's Taylor series expansion}. The Journal of Chemical Thermodynamics, 202, 107415. DOI: \href{https://doi.org/10.1016/j.jct.2024.107415}{10.1016/j.jct.2024.107415}. Tabla 1 (p. 5), ecuaciones (16)--(26) (p. 6), tabla 2 (p. 7), sección 3.2.
+
+[2] Universidad Veracruzana, Facultad de Ciencias Químicas. \textit{Primer Examen Parcial: Matemáticas Aplicadas}. Maestría en Ingeniería Química, 6 de octubre de 2026. Incisos a--g.
+
+[3] \textit{Solucionario razonado: Series de Taylor y termodinámica del sistema Fe-Al-O}. PDF proporcionado por el usuario, fechado el 7 de octubre de 2026. Base del desarrollo reconstruido; se conserva íntegro en \texttt{referencias/}.
+\end{document}

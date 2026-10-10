@@ -1,0 +1,22 @@
+[project]
+name = "solucionario-fe-al"
+version = "1.0.0"
+description = "Solucionario reproducible de Taylor y termodinámica Fe-Al, en español"
+requires-python = ">=3.12,<3.13"
+dependencies = ["numpy==2.3.4", "matplotlib==3.10.7", "sympy==1.14.0", "pypdf==6.1.1"]
+
+[dependency-groups]
+dev = ["pytest==8.4.2"]
+
+[project.scripts]
+feal = "feal.reproducir:main"
+
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["pruebas"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/feal"]
