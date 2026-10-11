@@ -94,6 +94,8 @@ def generar():
               "ErrorEnergiaCuadratico":f"{metricas[2][5]:.2f}"}
     (SALIDA/"tablas"/"valores.tex").write_text("\n".join(
         "\\newcommand{\\"+k+"}{"+v+"}" for k,v in comandos.items())+"\n")
+    from .desglose import generar_desglose
+    generar_desglose(SALIDA)
     plt.rcParams.update({"font.family":"DejaVu Sans","font.size":10,"axes.spines.top":False,
                          "axes.spines.right":False,"axes.grid":True,"grid.alpha":0.2})
     colores=["#909090","#167d9a","#e89b2c","#753b83"]
@@ -129,7 +131,7 @@ def compilar():
         raise SystemExit("Falta pdflatex. Consulte README.md para instalar TeX Live o usar Docker.")
     entorno=os.environ.copy()
     entorno.update(SOURCE_DATE_EPOCH="1791331200", FORCE_SOURCE_DATE="1", TZ="UTC")
-    for _ in range(2):
+    for _ in range(3):
         resultado=subprocess.run(["pdflatex","-interaction=nonstopmode","-halt-on-error",
             "-output-directory=output/pdf","documentos/solucionario.tex"],
             cwd=RAIZ,env=entorno,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,encoding="utf-8",errors="replace")
@@ -146,7 +148,7 @@ def main():
     if not args.solo_datos:
         compilar()
     archivos=sorted(p for p in SALIDA.rglob("*") if p.suffix in {".csv",".json",".png",".pdf",".tex"}
-                    and p.name != "manifiesto.json")
+                    and p.name != "manifiesto.json" and "didactico" not in p.parts and "matlab" not in p.parts)
     manifiesto={str(p.relative_to(RAIZ)):hashlib.sha256(p.read_bytes()).hexdigest() for p in archivos}
     (SALIDA/"manifiesto.json").write_text(json.dumps(manifiesto,indent=2)+"\n")
     print("Resultados, figuras y huellas SHA-256 disponibles en output/.")

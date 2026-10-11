@@ -1,0 +1,121 @@
+\tema{Extensión: distinguir dos aproximaciones que no son iguales}
+\paso{1. Método utilizado hasta ahora.}
+Primero aproximamos el logaritmo con $P_N$; después usamos $\gamma_N=e^{P_N}$. Si $N=3$, $P_3=F_3$ y $e^{P_3}=e^{F_3}$ coincide con la referencia. Por eso su error es cero.
+
+\paso{2. Una pregunta matemática nueva.}
+Ahora queremos aproximar directamente $\gamma_{\mathrm{ref}}(x)=e^{F_3(x)}$ mediante un polinomio:
+\[
+Q_m(x)=b_0+b_1x+b_2x^2+\cdots+b_mx^m.
+\]
+Los $b_n$ no son los $c_n$ del logaritmo. Sus valores deben calcularse. $Q_3$ no es $e^{P_3}$ y no tiene por qué tener error cero.
+
+\paso{3. Por qué aparecen infinitos términos.}
+La exponencial tiene el desarrollo $e^u=1+u+u^2/2!+u^3/3!+\cdots$. Escribimos $F_3=c_0+v(x)$, donde $v=c_1x+c_2x^2+c_3x^3$. Como $e^{c_0+v}=e^{c_0}e^v$:
+\[
+e^{F_3}=e^{c_0}\left[1+v+\frac{v^2}{2!}+\frac{v^3}{3!}+\cdots\right].
+\]
+Aunque $v$ es cúbico, sus potencias producen grados cada vez mayores: $v^2$ puede llegar a grado 6, $v^3$ a grado 9, etc. Por ejemplo, multiplicar $c_3x^3$ por sí mismo $r$ veces produce $c_3^rx^{3r}$. La operación exponencial no corta en grado tres.
+
+\paso{4. La expansión sigue usando los mismos datos iniciales.}
+Los únicos parámetros son $c_0=-3.8685$, $c_1=4.773$, $c_2=2.06$ y $c_3=-2.964$. No hay una nueva tabla de coeficientes experimentales para la serie infinita. Los $b_n$ se deducen matemáticamente de estos cuatro números.
+
+\paso{5. Comprobar la primera derivada directamente.}
+$\gamma=e^{F_3}$ implica, por regla de la cadena, $\gamma'=F_3'e^{F_3}=F_3'\gamma$. En cero:
+\[
+b_0=\gamma(0)=e^{c_0},\qquad b_1=\gamma'(0)=F_3'(0)\gamma(0)=c_1e^{c_0}.
+\]
+Para seguir sin calcular muchas derivadas compuestas, derivaremos una recurrencia: una regla que usa coeficientes ya conocidos para obtener el siguiente.
+
+\tema{Extensión: derivar la recurrencia sin saltos de índices}
+\paso{1. Escribir la serie y su derivada.}
+\[
+\gamma=b_0+b_1x+b_2x^2+b_3x^3+b_4x^4+\cdots,
+\]
+\[
+\gamma'=b_1+2b_2x+3b_3x^2+4b_4x^3+\cdots.
+\]
+La derivada del exponente es $F_3'=c_1+2c_2x+3c_3x^2$. Usamos $\gamma'=F_3'\gamma$.
+
+\paso{2. Distribuir los tres factores del producto.}
+\begin{align*}
+F_3'\gamma={}&c_1(b_0+b_1x+b_2x^2+b_3x^3+\cdots)\\
+&+2c_2x(b_0+b_1x+b_2x^2+\cdots)\\
+&+3c_3x^2(b_0+b_1x+b_2x^2+\cdots).
+\end{align*}
+Agrupamos potencias iguales:
+\begin{align*}
+x^0:&\quad c_1b_0,\\
+x^1:&\quad c_1b_1+2c_2b_0,\\
+x^2:&\quad c_1b_2+2c_2b_1+3c_3b_0,\\
+x^3:&\quad c_1b_3+2c_2b_2+3c_3b_1.
+\end{align*}
+\paso{3. Igualar los coeficientes de ambos lados.}
+Si dos series representan la misma función alrededor de cero, sus coeficientes de cada potencia son iguales:
+\begin{align*}
+b_1&=c_1b_0,\\
+2b_2&=c_1b_1+2c_2b_0,\\
+3b_3&=c_1b_2+2c_2b_1+3c_3b_0,\\
+4b_4&=c_1b_3+2c_2b_2+3c_3b_1.
+\end{align*}
+Dividir la segunda línea entre 2, la tercera entre 3 y la cuarta entre 4 despeja $b_2,b_3,b_4$.
+
+\paso{4. Escribir el patrón para cualquier $n\geq1$.}
+En la potencia $x^{n-1}$ del lado izquierdo aparece $nb_n$. Del derecho pueden contribuir los tres términos de $F_3'$:
+\[
+\boxed{b_0=e^{c_0},\qquad b_n=\frac1n\sum_{k=1}^{\min(3,n)}kc_kb_{n-k}.}
+\]
+El límite $\min(3,n)$ elige el menor de 3 y $n$: evita pedir $b_{-1}$ o $b_{-2}$, que no existen. Para $n\geq3$ se suman tres productos. Para $n=1$ solo uno y para $n=2$ dos.
+
+\tema{Extensión: calcular a mano los primeros coeficientes}
+\paso{1. Coeficiente constante.}
+$b_0=e^{c_0}=e^{-3.8685}$. Se evalúa la exponencial; no se toma un número de una tabla del artículo.
+
+\paso{2. Coeficiente lineal.}
+$b_1=c_1b_0=4.773b_0$. Hay una multiplicación y la división entre 1 no cambia el resultado.
+
+\paso{3. Coeficiente cuadrático.}
+La ecuación es $2b_2=c_1b_1+2c_2b_0$. Sustituyendo $b_1=c_1b_0$:
+\[
+2b_2=c_1(c_1b_0)+2c_2b_0=(c_1^2+2c_2)b_0.
+\]
+Dividimos entre 2: $b_2=(c_1^2/2+c_2)b_0$. Numéricamente,
+\[
+c_1^2=(4.773)(4.773)=22.781529,\quad
+c_1^2/2=11.3907645,
+\]
+\[
+c_1^2/2+c_2=11.3907645+2.06=13.4507645.
+\]
+Así $b_2=13.4507645b_0$. Esta forma es equivalente a la recurrencia; sirve como comprobación.
+
+\paso{4. Coeficiente cúbico.}
+$3b_3=c_1b_2+2c_2b_1+3c_3b_0$. Sustituimos las expresiones anteriores:
+\begin{align*}
+3b_3&=c_1(c_1^2/2+c_2)b_0+2c_2c_1b_0+3c_3b_0\\
+&=(c_1^3/2+c_1c_2+2c_1c_2+3c_3)b_0\\
+&=(c_1^3/2+3c_1c_2+3c_3)b_0.
+\end{align*}
+Dividir entre 3 da $b_3=(c_1^3/6+c_1c_2+c_3)b_0$. Aquí $4.773^3=108.736237917$, $4.773(2.06)=9.83238$ y $108.736237917/6=18.1227063195$. Entonces
+\[
+b_3=(18.1227063195+9.83238-2.964)b_0=24.9910863195b_0.
+\]
+\paso{5. ¿Y los coeficientes del 4 al 12?}
+No se necesita volver al artículo. Cada uno se calcula con los tres anteriores. Las páginas siguientes muestran todos los productos, su suma y la división final. Se imprimen decimales redondeados; las cuentas del programa conservan más precisión.
+
+\tema{Extensión: desglose numérico de todos los coeficientes utilizados}
+\input{output/tablas/recurrencia_desglosada.tex}
+
+\tema{Extensión: construir y evaluar las aproximaciones infinitas truncadas}
+\paso{1. Del coeficiente al término.}
+Una vez conocido $b_n$, el término evaluado en $x$ es $b_nx^n$. Por ejemplo, para $x=0.1$, $x^2=0.01$ y el término cuadrático es $b_2(0.01)$; no es simplemente $b_2$. El polinomio hasta grado $m$ suma desde $n=0$ hasta $n=m$.
+
+\paso{2. Cuenta de cada término en el extremo $x=0.3872$.}
+\begin{center}\scriptsize\input{output/tablas/terminos_gamma.tex}\end{center}
+La última columna es la suma acumulada $Q_n=Q_{n-1}+b_nx^n$, con $Q_0=b_0$. Por ejemplo, la fila 5 incluye exactamente los términos 0, 1, 2, 3, 4 y 5: son seis términos, no cinco.
+
+\paso{3. Error respecto de la misma exponencial de referencia.}
+Calculamos $e_m(x)=100|Q_m(x)/e^{F_3(x)}-1|$. Se evalúa en los 10001 puntos y se toma el máximo. No se usa $100|e^{Q_m-F_3}-1|$, porque $Q_m$ ya aproxima el coeficiente, no su logaritmo.
+\begin{center}\input{output/tablas/gamma.tex}\end{center}
+
+\paso{4. Convergencia y límite físico.}
+La serie de la exponencial converge para cualquier argumento finito; componerla con un polinomio produce una función entera y su Taylor alrededor de cero tiene radio infinito. Esto es una propiedad matemática. La fracción molar física está entre 0 y 1 y el modelo se estudia aquí solo hasta 0.3872. Convergencia matemática no autoriza extrapolar parámetros ni despreciar oxígeno fuera de sus condiciones.

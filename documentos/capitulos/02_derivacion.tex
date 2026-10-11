@@ -1,0 +1,177 @@
+\tema{b) Por qué Taylor y qué función vamos a desarrollar}
+\paso{1. La pregunta matemática.}
+Queremos conocer cómo cambia $\ln\gamma_{\Al}$ cuando $x$ crece desde una cantidad muy pequeña de Al. El punto de expansión es $x_0=0$. ``Alrededor de cero'' significa construir las aproximaciones usando el valor y las derivadas evaluados en cero. No significa sustituir $x=0$ en todas las gráficas: después evaluaremos el polinomio en muchos valores de $x$.
+
+\paso{2. Por qué se usa el logaritmo.}
+La termodinámica relaciona el potencial químico con la actividad mediante $\mu_i=\mu_i^\circ+RT\ln a_i$. Como $a_i=x_i\gamma_i$, la propiedad $\ln(ab)=\ln a+\ln b$ da
+\[
+\mu_i=\mu_i^\circ+RT\ln x_i+RT\ln\gamma_i.
+\]
+Los primeros dos términos constituyen la contribución ideal. La diferencia respecto de ella es $\mu_i^E=RT\ln\gamma_i$. De aquí sale la relación entre energía de exceso y logaritmo del coeficiente; no es una elección arbitraria de notación.
+
+\paso{3. Qué significa dilución infinita.}
+Es el límite de una cantidad de soluto tan pequeña que $x\to0$. El modelo asigna un valor límite finito a $\gamma_{\Al}$, aunque en hierro exactamente puro no haya una cantidad finita de Al cuya actividad medir. Se usa ese límite para definir las derivadas del modelo. Despreciar O en esta zona sigue siendo una hipótesis que puede fallar físicamente.
+
+\paso{4. Por qué no Fourier.}
+Fourier resulta natural para comportamientos periódicos. Aquí la variable es composición, no un tiempo o posición con repetición periódica. El modelo es suave en composición y queremos organizarlo en potencias de la distancia a cero: esa es la estructura de Taylor.
+
+\paso{5. La advertencia clave.}
+El modelo de partida ya es polinómico. Primero derivaremos de la energía de exceso un polinomio cúbico para $F$. Después aplicaremos Taylor explícitamente a ese polinomio. El Taylor de grado tres devolverá el mismo polinomio. La comparación interesante será observar qué se pierde al cortar antes. En una extensión separada, $e^{F_3}$ sí tendrá una serie infinita.
+
+\idea{Todavía no hemos calculado un coeficiente de Taylor. Hemos definido la función de interés, el punto de expansión y la razón física para usar $\ln\gamma$.}
+
+\tema{c) Expandir la energía libre: cada multiplicación}
+\paso{1. Copiar el modelo y definir un nombre corto.}
+La ecuación (16) de [1] da
+\[
+f(x)=\frac{g^E(x)}{RT}=x(1-x)[A+B(1-2x)].
+\]
+$f$ es adimensional. $A$ y $B$ son constantes respecto de $x$ a la temperatura fijada.
+
+\paso{2. Abrir el primer paréntesis.}
+Multiplicamos $x$ por ambos términos: $x(1-x)=x\cdot1-x\cdot x=x-x^2$.
+
+\paso{3. Abrir el segundo paréntesis.}
+$A+B(1-2x)=A+B\cdot1-B\cdot2x=A+B-2Bx$. Por tanto,
+\[
+f=(x-x^2)(A+B-2Bx).
+\]
+\paso{4. Distribuir los dos términos del primer factor.}
+\begin{align*}
+f&=x(A+B-2Bx)-x^2(A+B-2Bx)\\
+&=Ax+Bx-2Bx^2-Ax^2-Bx^2+2Bx^3.
+\end{align*}
+El último signo es positivo porque $(-x^2)(-2Bx)=+2Bx^3$.
+
+\paso{5. Agrupar por potencia.}
+\begin{align*}
+\text{Términos en }x &: Ax+Bx=(A+B)x,\\
+\text{Términos en }x^2 &: -2Bx^2-Ax^2-Bx^2=(-A-3B)x^2,\\
+\text{Término en }x^3 &: 2Bx^3.
+\end{align*}
+Así,
+\[
+f=(A+B)x-(A+3B)x^2+2Bx^3.
+\]
+\paso{6. Sustituir las constantes con sus signos.}
+\begin{align*}
+A+B&=-4.6095+0.741=-3.8685,\\
+A+3B&=-4.6095+3(0.741)=-4.6095+2.223=-2.3865,\\
+-(A+3B)&=-(-2.3865)=+2.3865,\\
+2B&=2(0.741)=1.482.
+\end{align*}
+Por tanto $f(x)=-3.8685x+2.3865x^2+1.482x^3$. Esto sigue siendo energía de exceso dividida entre $RT$; todavía no es $\ln\gamma_{\Al}$.
+
+\tema{c) Derivar la energía libre término por término}
+\paso{1. Regla de la potencia.}
+Si $a$ es constante, $d(ax^m)/dx=ma x^{m-1}$. Se multiplica por el exponente y luego se resta uno al exponente. Ejemplo: $d(7x^3)/dx=3(7)x^2=21x^2$. La derivada de una constante es cero.
+
+\paso{2. Aplicar la regla a cada sumando de $f$.}
+\begin{align*}
+\frac{d}{dx}[(A+B)x]&=(A+B)(1)x^0=A+B,\\
+\frac{d}{dx}[-(A+3B)x^2]&=-2(A+3B)x,\\
+\frac{d}{dx}[2Bx^3]&=3(2B)x^2=6Bx^2.
+\end{align*}
+La derivada de una suma es la suma de las derivadas:
+\[
+f'(x)=(A+B)-2(A+3B)x+6Bx^2.
+\]
+\paso{3. Calcular los coeficientes numéricos.}
+\begin{align*}
+A+B&=-3.8685,\\
+-2(A+3B)&=-2(-2.3865)=4.773,\\
+6B&=6(0.741)=4.446.
+\end{align*}
+Entonces $f'(x)=-3.8685+4.773x+4.446x^2$.
+
+\paso{4. Comprobar con la forma numérica.}
+Partiendo de $f=-3.8685x+2.3865x^2+1.482x^3$, derivamos directamente:
+\[
+f'=-3.8685+(2)(2.3865)x+(3)(1.482)x^2
+=-3.8685+4.773x+4.446x^2.
+\]
+Ambas rutas coinciden.
+
+\paso{5. Por qué necesitamos otra derivada distinta.}
+$f'$ mide el cambio de la energía molar adimensional con la composición. Pero $\ln\gamma_i$ está relacionado con el cambio de la energía \emph{total} cuando añadimos moles de una especie manteniendo fija la otra. Por eso la siguiente sección usa derivadas respecto de $n_{\Al}$ y $n_{\Fe}$, no simplemente $f'$.
+
+\idea{Ya podemos derivar un polinomio. Falta convertir una propiedad molar de la mezcla en la contribución parcial molar de cada especie.}
+
+\tema{c) De la energía molar a la contribución de cada especie}
+\paso{1. Energía total.}
+Si cada mol tiene energía de exceso $g^E=RTf$, entonces $n$ moles tienen $G^E=ng^E=nRTf(x)$. $G^E$ se mide en J y $g^E$ en J/mol. La contribución parcial molar es
+\[
+\mu_i^E=\left(\frac{\partial G^E}{\partial n_i}\right)_{T,P,n_{j\ne i}}.
+\]
+El símbolo $\partial$ indica que una variable cambia y otras se mantienen fijas. Usamos la identidad termodinámica $\mu_i^E=RT\ln\gamma_i$ explicada antes.
+
+\paso{2. Calcular cómo cambia $x$ al añadir Al.}
+Tenemos $x=n_{\Al}/(n_{\Al}+n_{\Fe})$. La regla del cociente es $(u/v)'=(u'v-uv')/v^2$. Manteniendo $n_{\Fe}$ fijo, $u'=1$ y $v'=1$:
+\begin{align*}
+\frac{\partial x}{\partial n_{\Al}}
+&=\frac{1(n_{\Al}+n_{\Fe})-n_{\Al}(1)}{(n_{\Al}+n_{\Fe})^2}
+=\frac{n_{\Fe}}{n^2}\\
+&=\frac{n_{\Fe}/n}{n}=\frac{1-x}{n}.
+\end{align*}
+\paso{3. Calcular cómo cambia $x$ al añadir Fe.}
+Ahora $n_{\Al}$ permanece fijo: $u'=0$ y $v'=1$:
+\[
+\frac{\partial x}{\partial n_{\Fe}}
+=\frac{0(n_{\Al}+n_{\Fe})-n_{\Al}(1)}{n^2}
+=-\frac{n_{\Al}}{n^2}=-\frac{x}{n}.
+\]
+\paso{4. Derivar $G^E=nRTf(x)$ respecto de Al.}
+$RT$ es constante. Para un producto, $(uv)'=u'v+uv'$. Para una función compuesta, $\partial f(x)/\partial n_i=f'(x)\partial x/\partial n_i$. Además, $\partial n/\partial n_i=1$. Juntando las reglas:
+\begin{align*}
+\frac{\partial G^E}{\partial n_{\Al}}
+&=RT\left[\frac{\partial n}{\partial n_{\Al}}f+n f'\frac{\partial x}{\partial n_{\Al}}\right]\\
+&=RT\left[1\cdot f+n f'\frac{1-x}{n}\right]
+=RT[f+(1-x)f'].
+\end{align*}
+Igualamos a $RT\ln\gamma_{\Al}$ y dividimos entre $RT$:
+\[
+\boxed{\ln\gamma_{\Al}=f+(1-x)f'.}
+\]
+\paso{5. Repetir para Fe.}
+$RT\ln\gamma_{\Fe}=RT[1\cdot f+n f'(-x/n)]=RT[f-xf']$. Dividiendo entre $RT$:
+\[
+\boxed{\ln\gamma_{\Fe}=f-xf'.}
+\]
+
+\tema{c) Construir el polinomio del aluminio, sin omitir productos}
+\paso{1. Escribir $F=f+(1-x)f'=f+f'-xf'$.}
+Ya sabemos que $f=(A+B)x-(A+3B)x^2+2Bx^3$ y $f'=(A+B)-2(A+3B)x+6Bx^2$.
+
+\paso{2. Multiplicar $f'$ por $-x$.}
+\[
+-xf'=-(A+B)x+2(A+3B)x^2-6Bx^3.
+\]
+Cada término de $f'$ se multiplica por $-x$; el término en $x$ pasa a $x^2$, y el de $x^2$ a $x^3$.
+
+\paso{3. Escribir los tres sumandos completos.}
+\begin{align*}
+F={}&\underbrace{(A+B)x-(A+3B)x^2+2Bx^3}_{f}\\
+&+\underbrace{(A+B)-2(A+3B)x+6Bx^2}_{f'}\\
+&+\underbrace{[-(A+B)x+2(A+3B)x^2-6Bx^3]}_{-xf'}.
+\end{align*}
+\paso{4. Agrupar una potencia a la vez.}
+\begin{align*}
+x^0:\quad &(A+B),\\
+x^1:\quad &(A+B)-2(A+3B)-(A+B)\\
+&=-2(A+3B)=-2A-6B,\\
+x^2:\quad &-(A+3B)+6B+2(A+3B)\\
+&=-A-3B+6B+2A+6B=A+9B,\\
+x^3:\quad &2B-6B=-4B.
+\end{align*}
+\paso{5. Sustituir cada número.}
+\begin{align*}
+A+B&=-4.6095+0.741=-3.8685,\\
+-2A-6B&=-2(-4.6095)-6(0.741)=9.219-4.446=4.773,\\
+A+9B&=-4.6095+9(0.741)=-4.6095+6.669=2.0595,\\
+-4B&=-4(0.741)=-2.964.
+\end{align*}
+Con el subíndice RK para identificar su procedencia:
+\[
+\boxed{\F(x)=-3.8685+4.773x+2.0595x^2-2.964x^3.}
+\]
+\idea{Este polinomio salió de la energía de exceso mediante propiedades parciales molares. Todavía no hemos aplicado Taylor. La sección siguiente sí lo hace explícitamente.}

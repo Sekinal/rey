@@ -1,0 +1,168 @@
+\tema{c) Por qué el hierro necesita su propia derivación}
+\paso{1. La restricción termodinámica.}
+A temperatura y presión constantes, Gibbs-Duhem vincula los potenciales químicos. Para el binario y los coeficientes de actividad:
+\[
+x_{\Fe}\,d\ln\gamma_{\Fe}+x_{\Al}\,d\ln\gamma_{\Al}=0.
+\]
+Esta es una identidad termodinámica que usamos como fundamento, al igual que la relación entre potencial químico y actividad; no es una ecuación ajustada con los datos de la malla. Su significado es que los cambios de ambas especies no pueden elegirse de forma independiente.
+
+\paso{2. Cambiar a la notación del trabajo.}
+$x_{\Fe}=1-x$, $x_{\Al}=x$, $H=\ln\gamma_{\Fe}$, $F=\ln\gamma_{\Al}$. Sustituyendo:
+\[
+(1-x)\,dH+x\,dF=0.
+\]
+Como $H$ y $F$ dependen de $x$, dividimos formalmente entre $dx$ para escribir las derivadas:
+\[
+(1-x)H'(x)+xF'(x)=0.
+\]
+\paso{3. Despejar la derivada del hierro.}
+Restamos $xF'$ a ambos lados y dividimos entre $1-x$ (no nulo en nuestro intervalo):
+\[
+(1-x)H'=-xF'\quad\Rightarrow\quad H'=-\frac{x}{1-x}F'.
+\]
+Para una aproximación de Al $P_N$ definimos el hierro correspondiente $H_N$ con $H_N'=-xP_N'/(1-x)$.
+
+\paso{4. Fijar la condición de frontera.}
+En $x=0$ hay hierro puro. En la escala de referencia adoptada, $\gamma_{\Fe}(0)=1$; entonces $H_N(0)=\ln1=0$. Integrar la derivada desde cero hasta $x$ da
+\[
+H_N(x)-H_N(0)=\int_0^x H_N'(t)\,dt
+=-\int_0^x\frac{t}{1-t}P_N'(t)\,dt.
+\]
+El símbolo $t$ es una variable auxiliar de integración; se usa para no confundirla con el límite superior $x$. Como $H_N(0)=0$:
+\[
+\boxed{H_N(x)=-\int_0^x\frac{t}{1-t}P_N'(t)\,dt.}
+\]
+\idea{Para cada truncamiento del aluminio calculamos un hierro compatible. Usar siempre el hierro cúbico con un aluminio lineal rompería esta construcción.}
+
+\tema{c) Integrar Gibbs-Duhem: resolver las tres integrales}
+\paso{1. Derivar el polinomio del aluminio.}
+$P_3(t)=c_0+c_1t+c_2t^2+c_3t^3$ da $P_3'(t)=c_1+2c_2t+3c_3t^2$. Multiplicamos por $-t/(1-t)$ y separamos la integral:
+\[
+H_3=-c_1\int_0^x\frac{t}{1-t}dt-2c_2\int_0^x\frac{t^2}{1-t}dt
+-3c_3\int_0^x\frac{t^3}{1-t}dt.
+\]
+\paso{2. Primera fracción.}
+Como $t=1-(1-t)$, $t/(1-t)=1/(1-t)-1$. La primitiva de $1/(1-t)$ es $-\ln(1-t)$: al derivarla, el $-1$ exterior se multiplica por la derivada $-1$ de $1-t$, dando signo positivo. Por tanto
+\[
+\int_0^x\frac{t}{1-t}dt=[-\ln(1-t)-t]_0^x=-\ln(1-x)-x,
+\]
+ya que en $t=0$ se obtiene $-\ln1-0=0$.
+
+\paso{3. Segunda fracción.}
+Verificamos $(1-t)(1+t)=1-t^2$, luego $1-(1-t)(1+t)=t^2$. Al dividir entre $1-t$:
+\[
+\frac{t^2}{1-t}=\frac1{1-t}-1-t.
+\]
+Integramos término a término; la primitiva de $t$ es $t^2/2$:
+\[
+\int_0^x\frac{t^2}{1-t}dt=[-\ln(1-t)-t-t^2/2]_0^x
+=-\ln(1-x)-x-x^2/2.
+\]
+\paso{4. Tercera fracción.}
+$(1-t)(1+t+t^2)=1-t^3$. Entonces $t^3/(1-t)=1/(1-t)-1-t-t^2$. La primitiva de $t^2$ es $t^3/3$:
+\[
+\int_0^x\frac{t^3}{1-t}dt
+=[-\ln(1-t)-t-t^2/2-t^3/3]_0^x
+=-\ln(1-x)-x-x^2/2-x^3/3.
+\]
+\paso{5. Multiplicar por los coeficientes exteriores.}
+Cada integral tiene un signo negativo que se cancela con el signo exterior:
+\begin{align*}
+H_3={}&c_1[\ln(1-x)+x]\,+\,2c_2[\ln(1-x)+x+x^2/2]\\
+&+3c_3[\ln(1-x)+x+x^2/2+x^3/3].
+\end{align*}
+El valor de $c_3$ sigue siendo negativo; cancelar los signos de integración no lo convierte en positivo.
+
+\tema{c) Hierro de cada orden y cancelación del logaritmo}
+\paso{1. Escribir los cuatro casos.}
+Con $c_1=4.773$, $2c_2=2(2.06)=4.12$ y $3c_3=3(-2.964)=-8.892$:
+\begin{align*}
+H_0&=0,\\
+H_1&=4.773[\ln(1-x)+x],\\
+H_2&=H_1+4.12[\ln(1-x)+x+x^2/2],\\
+H_3&=H_2-8.892[\ln(1-x)+x+x^2/2+x^3/3].
+\end{align*}
+$H_0=0$ porque la derivada de $P_0$ es cero. En todos los casos, sustituir $x=0$ da cero.
+
+\paso{2. Agrupar en $H_3$ cada tipo de término.}
+\begin{align*}
+\ln(1-x):&\quad4.773+4.12-8.892=0.001,\\
+x:&\quad4.773+4.12-8.892=0.001,\\
+x^2:&\quad4.12/2-8.892/2=2.06-4.446=-2.386,\\
+x^3:&\quad-8.892/3=-2.964.
+\end{align*}
+Así $H_3=0.001[\ln(1-x)+x]-2.386x^2-2.964x^3$.
+
+\paso{3. Repetir con $c_2=2.0595$ sin redondear.}
+Ahora $2c_2=4.119$. El coeficiente del logaritmo y del término lineal es $4.773+4.119-8.892=0$. El de $x^2$ es $4.119/2-8.892/2=2.0595-4.446=-2.3865$. Por tanto $H_{\mathrm{RK}}=-2.3865x^2-2.964x^3$.
+
+\paso{4. Comprobarlo directamente desde la energía.}
+Usando $H_{\mathrm{RK}}=f-xf'$:
+\begin{align*}
+f-xf'={}&[-3.8685x+2.3865x^2+1.482x^3]\\
+&-[-3.8685x+4.773x^2+4.446x^3]\\
+={}&(-3.8685+3.8685)x+(2.3865-4.773)x^2\\
+&+(1.482-4.446)x^3=-2.3865x^2-2.964x^3.
+\end{align*}
+La ruta parcial molar y la ruta Gibbs-Duhem coinciden para los mismos coeficientes. El pequeño término logarítmico de $H_3$ se debe al redondeo, no a una nueva interacción física identificada.
+
+\tema{c) Fórmula general y precisión cerca de cero}
+\paso{1. Reconocer el patrón de las tres integrales.}
+Para un entero $k\geq1$:
+\[
+\frac{t^k}{1-t}=\frac1{1-t}-\sum_{j=0}^{k-1}t^j.
+\]
+Se verifica multiplicando por $1-t$: los términos intermedios de $(1-t)(1+t+\cdots+t^{k-1})$ se cancelan y queda $1-t^k$. La derivada de $c_kt^k$ es $kc_kt^{k-1}$; al multiplicar por $t/(1-t)$ queda $kc_kt^k/(1-t)$. Integrar y aplicar la frontera da
+\[
+H_N=\sum_{k=1}^Nkc_k\left[\ln(1-x)+\sum_{j=1}^{k}\frac{x^j}{j}\right].
+\]
+Para $k=1,2,3$ recuperamos exactamente los corchetes ya calculados.
+
+\paso{2. De dónde sale la serie del logaritmo.}
+Para $|t|<1$, la suma geométrica es $1/(1-t)=1+t+t^2+\cdots$. Integramos entre 0 y $x$ (con $|x|<1$):
+\[
+-\ln(1-x)=x+\frac{x^2}{2}+\frac{x^3}{3}+\cdots.
+\]
+Por tanto $\ln(1-x)=-\sum_{j=1}^{\infty}x^j/j$. Si sumamos los primeros $k$ términos positivos, se cancelan los primeros $k$ negativos:
+\[
+\ln(1-x)+\sum_{j=1}^k\frac{x^j}{j}=-\sum_{j=k+1}^{\infty}\frac{x^j}{j}.
+\]
+\paso{3. Por qué el programa cambia de forma para $x<0.1$.}
+Para $x$ muy pequeño, $\ln(1-x)\simeq-x$. Sumarle $x$ resta números casi iguales y puede borrar cifras significativas en la computadora. La cola de la derecha suma números del mismo signo y evita esa cancelación.
+
+El programa conserva la cola hasta $j=32$. Para $0\leq x<0.1$, el error omitido es menor o igual a
+\[
+\sum_{j=33}^{\infty}\frac{x^j}{j}\leq\frac1{33}\sum_{j=33}^{\infty}x^j
+=\frac{x^{33}}{33(1-x)}<\frac{10^{-33}}{33(0.9)}<10^{-32}.
+\]
+Fuera de esa región se evalúa la expresión con \texttt{log1p(-x)}, que calcula $\ln(1-x)$. Esta cota se refiere a truncar la cola, no a eliminar todo error de redondeo de la computadora.
+
+\tema{f) Energía de exceso: reconstruirla desde Al y Fe}
+\paso{1. Ponderar las contribuciones.}
+La energía molar adimensional de exceso del binario se expresa como $x\ln\gamma_{\Al}+(1-x)\ln\gamma_{\Fe}$. Para orden $N$:
+\[
+g_N^E=RT[xP_N+(1-x)H_N].
+\]
+No se suman directamente $P_N+H_N$: cada especie aporta en proporción a su fracción molar.
+
+\paso{2. Verificar la fórmula con las propiedades parciales originales.}
+Insertamos $F=f+(1-x)f'$ y $H=f-xf'$:
+\begin{align*}
+xF+(1-x)H
+&=x[f+(1-x)f']+(1-x)[f-xf']\\
+&=xf+x(1-x)f'+(1-x)f-x(1-x)f'\\
+&=[x+(1-x)]f+0\cdot f'=1\cdot f=f.
+\end{align*}
+Multiplicando por $RT$ recuperamos $RTf=g^E$. Para los coeficientes redondeados se usa la pareja $F_3,H_3$, que satisface Gibbs-Duhem, aunque difiere ligeramente del RK original.
+
+\paso{3. Ejemplo numérico detallado en $x=0.1$.}
+\input{output/tablas/hierro_ejemplo.tex}
+
+\paso{4. Repetir con otros órdenes.}
+Para $N=1$, se usan $P_1$ y $H_1$; para $N=2$, $P_2$ y $H_2$. Las mismas multiplicaciones por $x$, $1-x$ y $RT$ producen $g_1^E$ y $g_2^E$. El programa registra estas propiedades para cada punto en \texttt{malla.csv}; el máximo de $|g_N^E-g_3^E|$ se obtiene igual que el máximo de cualquier otra lista de errores.
+
+\tema{f) Cuenta completa en el extremo de mayor composición}
+\input{output/tablas/extremo.tex}
+
+\paso{Qué indica esta cuenta.}
+La diferencia entre las aproximaciones es visible tanto en los logaritmos como en sus exponenciales. El coeficiente del Al permanece por debajo de 1. Su actividad también queda por debajo de la fracción molar. El hierro tiene su propia contribución no ideal y por eso debe incluirse para calcular la energía de la mezcla.

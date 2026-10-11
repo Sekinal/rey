@@ -1,0 +1,75 @@
+\tema{Versión MATLAB: archivo completo y forma de ejecución}
+\paso{1. Qué archivo usar.}
+La versión MATLAB completa se encuentra en \texttt{matlab/paso\_a\_paso.m}. Incluye una función principal y todas sus funciones auxiliares en el mismo archivo. No requiere copiar funciones desde otro archivo ni instalar un toolbox científico adicional. Los parámetros y las ecuaciones son los mismos que en Python.
+
+\paso{2. Abrir la carpeta correcta.}
+En MATLAB, seleccionar la raíz del repositorio como carpeta actual. En la ventana de comandos ejecutar:
+\begin{verbatim}
+addpath('matlab');
+resultados = paso_a_paso;
+\end{verbatim}
+\texttt{addpath} permite que MATLAB encuentre el archivo dentro de la subcarpeta. La segunda línea llama a la función, realiza el cálculo completo y guarda en \texttt{resultados} una estructura con las magnitudes calculadas.
+
+También se puede abrir el archivo y ejecutarlo desde su propia carpeta. El programa localiza su ruta mediante \texttt{mfilename('fullpath')}; la carpeta de salida no depende de dónde se abra la consola. No se deben pegar los comentarios del PDF como si fueran órdenes distintas: el listado ya está completo en el archivo descargable.
+
+\paso{3. Resultados que se generan.}
+La carpeta \texttt{output/matlab/} contiene cuatro imágenes. Sus nombres son \texttt{actividad.png}, \texttt{errores.png}, \texttt{termodinamica.png} y \texttt{serie\_infinita.png}. También se guardan \texttt{metricas.csv}, \texttt{coeficientes\_gamma.csv}, \texttt{taylor\_gamma.csv} y \texttt{malla.csv}. La malla contiene los 10001 valores de $x$ y todas las columnas de los polinomios, coeficientes, hierro, energía y expansión directa.
+
+\paso{4. Consultar valores en la consola.}
+\begin{verbatim}
+resultados.metricas
+resultados.b
+resultados.P(4, end)
+resultados.G(4, end)/1000
+\end{verbatim}
+La primera orden muestra las métricas. La segunda, $b_0$ hasta $b_{12}$. La tercera toma el orden 3 en la última composición; debe dar aproximadamente $-1.883613$. La cuarta devuelve la energía del mismo punto en kJ/mol, aproximadamente $-16.414661$. \texttt{end} significa la última posición de esa dimensión.
+
+\paso{5. Elegir otra carpeta de salida.}
+\texttt{resultados = paso\_a\_paso('mis\_resultados');} pasa un argumento: el nombre de la carpeta. Si no se da argumento, se usa la ruta predeterminada. Cambiar la carpeta no cambia parámetros ni cálculos.
+
+\tema{MATLAB desde cero: las diferencias que pueden cambiar una cuenta}
+\paso{1. Índices que comienzan en uno.}
+Matemáticamente usamos $c_0,c_1,c_2,c_3$. En MATLAB se guardan en \texttt{C(1)}, \texttt{C(2)}, \texttt{C(3)}, \texttt{C(4)}. Por eso la instrucción para $c_k$ es \texttt{C(k+1)}. El contador matemático puede valer cero aunque las posiciones del arreglo no.
+
+Para la recurrencia, $b_{n-k}$ se encuentra en \texttt{b(n-k+1)}. Ejemplo: con $n=2$, $k=2$, se necesita $b_0$ y la posición es $2-2+1=1$. El resultado $b_2$ se guarda en \texttt{b(3)}.
+
+\paso{2. Potencias, productos y divisiones por componentes.}
+\texttt{x.\^{}2} eleva cada entrada de $x$ al cuadrado. \texttt{x.*P} multiplica las entradas correspondientes de dos arreglos. \texttt{Q./referencia} divide cada entrada de $Q$ entre la correspondiente de la referencia. El punto importa: \texttt{*}, \texttt{/} y \texttt{\^{}} sin punto pueden significar operaciones matriciales diferentes. Multiplicar por un escalar, como \texttt{2.06*x.\^{}2}, sí usa \texttt{*} porque el factor es un solo número.
+
+\paso{3. Filas y columnas.}
+\texttt{zeros(4,M)} crea cuatro filas y $M$ columnas. \texttt{P(fila,:)} selecciona todas las columnas de una fila. Para orden 2, \texttt{fila=2+1=3}. \texttt{P(3,:)} representa $P_2$ en toda la malla. \texttt{P.'} intercambia filas y columnas sin conjugación compleja: se usa para guardar una composición por fila en CSV y para dibujar una curva por columna.
+
+\paso{4. Ciclos y cierres.}
+\texttt{for k=0:orden} recorre todos los enteros entre esos límites, incluidos ambos. \texttt{end} termina el bloque. Para orden 3, \texttt{(orden+1):3} es \texttt{4:3}, una secuencia vacía con incremento positivo predeterminado; la suma de términos omitidos queda en cero. El punto y coma al final de una instrucción evita imprimir automáticamente su resultado, pero no evita que se calcule.
+
+\paso{5. Funciones y estructuras.}
+\texttt{function p=logaritmo\_aluminio(x,orden,C)} define una función que recibe tres argumentos y devuelve \texttt{p}. \texttt{resultados.P} accede al campo \texttt{P} de una estructura. Las llaves de \texttt{\{'Orden 0','Orden 1'\}} crean una colección de textos. \texttt{...} al final de una línea indica que la instrucción continúa en la siguiente.
+
+\tema{MATLAB: seguir las cuentas y comprobar la equivalencia}
+\paso{1. Seguir el orden 2 en una composición.}
+El ciclo empieza con $p=0$. Para $k=0$ usa \texttt{C(1)} y $x^0=1$; para $k=1$ usa \texttt{C(2)} y $x$; para $k=2$ usa \texttt{C(3)} y $x^2$. En $x=0.1$ acumula $-3.8685$, luego $-3.3912$ y finalmente $-3.3706$. Es la misma cuenta desarrollada antes.
+
+\paso{2. Seguir la primera iteración de la recurrencia.}
+\texttt{b(1)=exp(C(1))} fija $b_0$. Con $n=1$, el ciclo interior solo tiene $k=1$; calcula \texttt{1*C(2)*b(1)} y divide entre 1. Guarda el resultado en \texttt{b(2)}, que representa $b_1$. Con $n=2$ ya se pueden usar $b_1$ y $b_0$. Así nunca se necesita un coeficiente que aún no exista.
+
+\paso{3. Conservar las mismas convenciones físicas.}
+$G$ está en J/mol y solo se divide entre 1000 al dibujarlo en kJ/mol. $P$ y $H$ son logaritmos; \texttt{Gamma=exp(P)} obtiene el coeficiente. El error de la serie infinita usa \texttt{Q./referencia-1}, no otra exponencial. La cola del logaritmo se estabiliza con el mismo umbral $x<0.1$ y hasta grado 32.
+
+\paso{4. Comparar automáticamente los archivos.}
+Después de ejecutar la versión MATLAB o compatible, desde la raíz del repositorio:
+\begin{verbatim}
+uv run --locked python pruebas/verificar_matlab.py
+\end{verbatim}
+El verificador compara todas las columnas de los 10001 puntos, los 13 coeficientes de la recurrencia y ambas tablas de errores con el modelo Python. Permite diferencias pequeñas de redondeo entre motores. Si una magnitud no coincide dentro de las tolerancias indicadas en el verificador, termina con error.
+
+\paso{5. Entorno de validación disponible.}
+La ejecución de compatibilidad se realiza con GNU Octave, que interpreta este archivo de sintaxis MATLAB, usando \texttt{Dockerfile.octave}. No se dispone de una licencia ni de un motor MATLAB instalado en el entorno de preparación; por tanto la comprobación con Octave no se presenta como una ejecución nativa en MATLAB. El archivo utiliza funciones básicas y evita toolboxes adicionales.
+\begin{verbatim}
+docker build -f Dockerfile.octave -t rey-octave .
+docker run --rm -v "$PWD:/proyecto" rey-octave
+\end{verbatim}
+En Linux se puede añadir \texttt{--user "\$(id -u):\$(id -g)"} a \texttt{docker run} para que los archivos pertenezcan al usuario actual. La receta fija la distribución base declarada, pero no archiva todas las versiones del sistema por digest. El README registra la versión del motor efectivamente comprobada.
+
+\tema{Código MATLAB completo, comentado instrucción por instrucción}
+Los comentarios comienzan con \texttt{\%}; explican la instrucción siguiente y no se ejecutan. Copiar preferentemente \texttt{matlab/paso\_a\_paso.m} desde el repositorio para conservar el archivo completo. Las funciones auxiliares están incluidas después del \texttt{end} de la principal.
+\lstinputlisting[language=Matlab]{matlab/paso_a_paso.m}

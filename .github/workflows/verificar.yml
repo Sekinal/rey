@@ -9,11 +9,17 @@ jobs:
         with:
           version: "0.11.15"
       - name: Instalar LaTeX
-        run: sudo apt-get update && sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils
+        run: sudo apt-get update && sudo apt-get install -y texlive-latex-base texlive-latex-recommended texlive-fonts-recommended lmodern poppler-utils octave gnuplot-nox ghostscript fonts-freefont-otf
       - name: Instalar dependencias fijadas
         run: uv sync --locked
       - name: Verificar matemáticas
         run: uv run --locked pytest
+      - name: Ejecutar Python didáctico
+        run: uv run --locked python ejemplos/paso_a_paso.py
+      - name: Ejecutar MATLAB compatible y comparar con Python
+        run: |
+          octave --no-gui --quiet --eval "addpath('matlab'); paso_a_paso;"
+          uv run --locked python pruebas/verificar_matlab.py
       - name: Generar solucionario
         run: uv run --locked feal
       - name: Comprobar determinismo en el mismo entorno

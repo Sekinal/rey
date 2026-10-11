@@ -1,0 +1,130 @@
+\tema{c) Taylor desde su definición: por qué aparecen factoriales}
+\paso{1. Proponer un polinomio que imite a $F$ cerca de cero.}
+Escribimos $P_3(x)=c_0+c_1x+c_2x^2+c_3x^3$. Queremos que coincidan el valor y las tres primeras derivadas de $P_3$ y $F$ en cero. Así ambos tienen allí el mismo valor, pendiente y primeras correcciones de curvatura.
+
+\paso{2. Igualar el valor en cero.}
+$P_3(0)=c_0+c_1(0)+c_2(0)^2+c_3(0)^3=c_0$. Como exigimos $P_3(0)=F(0)$, resulta $c_0=F(0)$.
+
+\paso{3. Igualar la primera derivada.}
+$P_3'=c_1+2c_2x+3c_3x^2$. Al evaluar en cero, $P_3'(0)=c_1$. Exigir $P_3'(0)=F'(0)$ da $c_1=F'(0)$.
+
+\paso{4. Igualar la segunda derivada.}
+Derivamos otra vez: $P_3''=2c_2+6c_3x$. Entonces $P_3''(0)=2c_2$. Igualamos $2c_2=F''(0)$ y dividimos entre 2:
+\[
+c_2=\frac{F''(0)}2=\frac{F''(0)}{2!}.
+\]
+\paso{5. Igualar la tercera derivada.}
+$P_3'''=6c_3$, de modo que $6c_3=F'''(0)$ y $c_3=F'''(0)/6=F'''(0)/3!$.
+
+\paso{6. Escribir la regla general.}
+Al derivar $x^k$ exactamente $k$ veces aparecen los factores $k(k-1)\cdots1=k!$. Por eso el coeficiente es $c_k=F^{(k)}(0)/k!$, y no solo la derivada. Taylor con resto escribe
+\[
+F(x)=\underbrace{\sum_{k=0}^{N}\frac{F^{(k)}(0)}{k!}x^k}_{P_N(x)}+R_N(x).
+\]
+$R_N=F-P_N$ es lo que falta. Para un centro general $x_0$ usaríamos $(x-x_0)^k$ y derivadas en $x_0$. Aquí $x_0=0$ y $x-0=x$; este caso también se llama serie de Maclaurin.
+
+\idea{Los factoriales compensan las multiplicaciones que produce la derivación repetida. No son números agregados sin justificación. Ahora aplicaremos esta construcción a $\F$.}
+
+\tema{c) Taylor del modelo: todas las derivadas y sus valores}
+Partimos de $\F=-3.8685+4.773x+2.0595x^2-2.964x^3$.
+
+\paso{1. Primera derivada: un término por línea.}
+\begin{align*}
+(-3.8685)'&=0,\qquad (4.773x)'=4.773(1)x^0=4.773,\\
+(2.0595x^2)'&=2(2.0595)x=4.119x,\\
+(-2.964x^3)'&=3(-2.964)x^2=-8.892x^2.
+\end{align*}
+Sumamos: $\F'=4.773+4.119x-8.892x^2$.
+
+\paso{2. Segunda derivada.}
+$(4.773)'=0$, $(4.119x)'=4.119$, $(-8.892x^2)'=2(-8.892)x=-17.784x$. Por tanto $\F''=4.119-17.784x$.
+
+\paso{3. Tercera y cuarta derivadas.}
+$(4.119)'=0$ y $(-17.784x)'=-17.784$, así que $\F'''=-17.784$. Como es constante, $\F^{(4)}=0$. Derivar cero vuelve a dar cero: todas las derivadas posteriores son cero.
+
+\paso{4. Evaluar en cero sin omitir los términos que desaparecen.}
+\begin{align*}
+\F(0)&=-3.8685+4.773(0)+2.0595(0)^2-2.964(0)^3=-3.8685,\\
+\F'(0)&=4.773+4.119(0)-8.892(0)^2=4.773,\\
+\F''(0)&=4.119-17.784(0)=4.119,\\
+\F'''(0)&=-17.784.
+\end{align*}
+\paso{5. Dividir cada derivada entre su factorial.}
+\[
+c_0=\frac{-3.8685}{1}=-3.8685,\qquad c_1=\frac{4.773}{1}=4.773,
+\]
+\[
+c_2=\frac{4.119}{2}=2.0595,\qquad c_3=\frac{-17.784}{6}=-2.964.
+\]
+\paso{6. Sustituir en la fórmula de Taylor.}
+\begin{align*}
+\F(x)&=\F(0)+\F'(0)x+\frac{\F''(0)}{2!}x^2+\frac{\F'''(0)}{3!}x^3\\
+&=-3.8685+4.773x+\frac{4.119}{2}x^2+\frac{-17.784}{6}x^3\\
+&=-3.8685+4.773x+2.0595x^2-2.964x^3.
+\end{align*}
+Recuperamos el polinomio de partida porque es cúbico. No hubo ajuste ni descubrimiento de nuevos datos: se verificó su expansión de Taylor y se identificó qué significa cada coeficiente.
+
+\tema{c) El redondeo del artículo y el resto de Taylor}
+\paso{1. Dos referencias cercanas, pero distintas.}
+La derivación desde $A,B$ da $c_2=2.0595$. La ecuación (26) de [1] usa $\rho=2.06$. Para reproducir sus números definimos explícitamente otra función:
+\[
+F_3(x)=-3.8685+4.773x+2.06x^2-2.964x^3.
+\]
+Restamos término a término:
+\begin{align*}
+F_3-\F&=(-3.8685+3.8685)+(4.773-4.773)x\\
+&\quad +(2.06-2.0595)x^2+(-2.964+2.964)x^3\\
+&=0+0x+0.0005x^2+0x^3=0.0005x^2.
+\end{align*}
+En el extremo, $0.3872^2=0.14992384$ y $0.0005(0.14992384)=0.00007496192$. Esta diferencia es de redondeo de parámetros, no de truncamiento.
+
+\paso{2. Taylor de la referencia redondeada.}
+Derivando igual que antes:
+\[
+F_3'=4.773+4.12x-8.892x^2,\quad F_3''=4.12-17.784x,\quad F_3'''=-17.784.
+\]
+Ahora $c_2=F_3''(0)/2=4.12/2=2.06$. A partir de aquí, salvo que aparezca el subíndice RK, todas las comparaciones usan $F_3$.
+
+\paso{3. Por qué no se divide dos veces entre factoriales.}
+Los parámetros publicados de Wagner $\varepsilon$, $\rho$ y $\theta$ son ya los coeficientes $c_1,c_2,c_3$. Si $\rho=2.06$, el término es $2.06x^2$. Dividir de nuevo entre 2 daría $1.03x^2$, que no corresponde al desarrollo declarado.
+
+\paso{4. Qué es el resto.}
+Para una función con suficientes derivadas, el resto de Lagrange es
+\[
+R_N(x)=\frac{F^{(N+1)}(\xi)}{(N+1)!}x^{N+1},\qquad 0<\xi<x.
+\]
+En nuestro cúbico, para $N=3$, $F_3^{(4)}(\xi)=0$ y $R_3=0x^4/24=0$. Para $N=2$, $F_3'''=-17.784$, así que $R_2=(-17.784/6)x^3=-2.964x^3$. Más adelante restaremos polinomios para obtener también $R_0$ y $R_1$ exactamente.
+
+\idea{El desarrollo finito es exacto respecto del modelo elegido. Esto no demuestra que un líquido real tenga derivadas de orden cuatro nulas ni que el modelo carezca de error físico.}
+
+\tema{d) Construir cada aproximación y hacer una cuenta completa}
+\paso{1. Truncar significa dejar de sumar después de una potencia.}
+\begin{align*}
+P_0(x)&=-3.8685,\\
+P_1(x)&=-3.8685+4.773x,\\
+P_2(x)&=-3.8685+4.773x+2.06x^2,\\
+P_3(x)&=-3.8685+4.773x+2.06x^2-2.964x^3=F_3(x).
+\end{align*}
+Orden 0 tiene 1 término; orden 1, 2 términos; orden 2, 3 términos; orden 3, 4 términos. Contamos la constante. Los coeficientes no se reajustan.
+
+\paso{2. Elegir una composición para practicar: $x=0.1$.}
+Primero las potencias: $x^0=1$, $x^1=0.1$, $x^2=(0.1)(0.1)=0.01$, $x^3=(0.01)(0.1)=0.001$.
+
+\paso{3. Multiplicar cada coeficiente por su potencia.}
+\begin{align*}
+t_0&=c_0x^0=(-3.8685)(1)=-3.8685,\\
+t_1&=c_1x=(4.773)(0.1)=0.4773,\\
+t_2&=c_2x^2=(2.06)(0.01)=0.0206,\\
+t_3&=c_3x^3=(-2.964)(0.001)=-0.002964.
+\end{align*}
+\paso{4. Sumar de forma acumulativa.}
+\begin{align*}
+P_0&=t_0=-3.8685,\\
+P_1&=P_0+t_1=-3.8685+0.4773=-3.3912,\\
+P_2&=P_1+t_2=-3.3912+0.0206=-3.3706,\\
+P_3&=P_2+t_3=-3.3706-0.002964=-3.373564.
+\end{align*}
+\paso{5. Regresar del logaritmo al coeficiente.}
+$\gamma_N=e^{P_N}$. Por ejemplo $\gamma_3=e^{-3.373564}\simeq0.034267291$; esta operación se evalúa con la función exponencial de una calculadora o del programa. La actividad es $a_{\Al,3}=x\gamma_3\simeq0.1(0.034267291)=0.0034267291$.
+
+\textbf{Atención:} $P_3$, $\gamma_3$ y $a_{\Al,3}$ son tres resultados diferentes. No se grafica uno con el nombre de otro. La extensión posterior explica cómo calcular la exponencial mediante una serie propia.

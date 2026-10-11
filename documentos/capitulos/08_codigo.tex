@@ -1,0 +1,157 @@
+\tema{e) El código: qué archivo abrir y cómo ejecutarlo}
+\paso{1. Ya no se necesita buscar un archivo que no está adjunto.}
+El programa didáctico completo está en
+\begin{center}\texttt{ejemplos/paso\_a\_paso.py}\end{center}
+y se reproduce íntegro al final de este documento. Incluye importaciones, parámetros, todas las funciones matemáticas, cálculo de métricas, escritura de tablas y generación de cuatro imágenes. No es solo el núcleo de unas veinte líneas. No depende de importar las funciones internas del paquete \texttt{feal}.
+
+\paso{2. Preparar el entorno.}
+Descargar o clonar el repositorio y abrir una terminal en su carpeta. \texttt{uv} administra el intérprete de Python y sus bibliotecas. \texttt{uv.lock} fija las versiones. La primera ejecución necesita conexión para descargar lo que falte. Ejecutar:
+\begin{verbatim}
+uv sync --locked
+uv run --locked python ejemplos/paso_a_paso.py
+\end{verbatim}
+La primera línea instala el entorno declarado sin modificar el archivo de versiones. La segunda ejecuta el archivo con ese entorno. \texttt{python} es el intérprete; la ruta que le sigue es el programa que debe leer.
+
+\paso{3. Encontrar los resultados.}
+Aparecen en \texttt{output/didactico/}: \texttt{metricas.csv}, \texttt{coeficientes\_gamma.csv}, \texttt{actividad.png}, \texttt{errores.png}, \texttt{termodinamica.png} y \texttt{serie\_infinita.png}. La terminal también muestra las métricas. El programa guarda las figuras; no necesita abrir ventanas.
+
+\paso{4. Regenerar el documento y los desgloses completos.}
+El comando integral es:
+\begin{verbatim}
+uv run --locked feal
+\end{verbatim}
+Este comando usa los módulos de \texttt{src/feal/}, genera tablas y figuras con formato editorial y compila LaTeX. Requiere \texttt{pdflatex}; el README indica cómo instalarlo. Con \texttt{uv run --locked feal --solo-datos} se omite la compilación. El programa didáctico no necesita LaTeX.
+
+\paso{5. Python y MATLAB son lenguajes diferentes.}
+El archivo entregado es Python. Pegar su contenido en MATLAB no lo ejecuta. Para trasladar el método, hay que traducir sintaxis: Python cuenta índices desde 0 y MATLAB desde 1; NumPy aplica \texttt{x**k} elemento a elemento, mientras que en MATLAB se usa \texttt{x.\^{}k}. Los CSV sí pueden abrirse desde MATLAB. Esta edición incluye también una versión completa en MATLAB, explicada y listada en las secciones posteriores. Su compatibilidad se comprueba con GNU Octave.
+
+\tema{e) Leer Python desde cero: signos, arreglos e índices}
+\paso{1. Asignación y comparación.}
+En código, \texttt{x = 0.1} guarda el número 0.1 con el nombre \texttt{x}. No es una ecuación que deba resolver el programa. \texttt{==} compara igualdad; \texttt{<} compara menor que y \texttt{<=} menor o igual. El resultado de una comparación es verdadero o falso. \texttt{**} eleva a una potencia y \texttt{*} multiplica.
+
+\paso{2. Comentarios y nombres.}
+Lo que aparece después de \texttt{\#} explica la línea y no se ejecuta. Los nombres \texttt{np} y \texttt{plt} son abreviaturas definidas en las importaciones: representan NumPy y la interfaz de gráficas. Las cadenas entre comillas son texto, no nombres de variables. \texttt{f"Orden \{orden\}"} inserta el valor de \texttt{orden} en ese texto.
+
+\paso{3. Un arreglo almacena varios números.}
+\texttt{C = np.array([-3.8685, 4.773, 2.06, -2.964])} crea cuatro posiciones. \texttt{C[0]} vale $-3.8685$; \texttt{C[1]} vale $4.773$; \texttt{C[2]} vale $2.06$; \texttt{C[3]} vale $-2.964$. La primera posición es 0. \texttt{len(C)} sería 4.
+
+\paso{4. Operaciones sobre arreglos.}
+Si \texttt{x} contiene $[0,0.1,0.2]$, su cuadrado por componentes es $[0,0.01,0.04]$. Entonces \texttt{2.06*x**2} produce $[0,0.0206,0.0824]$. Son tres cálculos independientes, uno por composición, realizados por una sola instrucción. Esta es la razón de que pocas líneas puedan generar muchos puntos.
+
+\paso{5. Matrices e índices dobles.}
+\texttt{p} tiene 4 filas y 10001 columnas. \texttt{p[2]} es toda la fila del orden 2. \texttt{p[2, 0]} sería su primer valor, en $x=0$. En general, \texttt{p[N,j]} corresponde a $P_N(x_j)$. \texttt{np.zeros((4, len(x)))} reserva esa matriz llena de ceros; no calcula todavía Taylor.
+
+\paso{6. Funciones, ciclos y sangría.}
+\texttt{def} define una función y \texttt{return} devuelve su resultado. \texttt{for} repite un bloque y \texttt{if} elige qué bloque ejecutar. Los espacios al inicio de cada línea indican a qué bloque pertenece: copiarlos mal puede cambiar el programa o causar un error. Definir una función no la ejecuta; hay que llamarla por su nombre y darle los argumentos.
+
+\tema{e) Seguir un ciclo a mano y entender las funciones matemáticas}
+\paso{1. Seguir \texttt{calcular\_logaritmo} con $x=0.1$ y orden 2.}
+En el programa, $x$ es un arreglo, pero podemos seguir una sola de sus entradas. Inicialmente \texttt{resultado=0}. \texttt{range(orden+1)} es \texttt{range(3)}, que produce $k=0,1,2$; no incluye 3.
+\begin{center}\begin{tabular}{rrrrr}\toprule
+$k$ & Potencia & Coeficiente & Término & Resultado acumulado\\\midrule
+0 & 1 & $-3.8685$ & $-3.8685$ & $-3.8685$\\
+1 & 0.1 & 4.773 & 0.4773 & $-3.3912$\\
+2 & 0.01 & 2.06 & 0.0206 & $-3.3706$\\\bottomrule
+\end{tabular}\end{center}
+Al terminar, \texttt{return resultado} entrega $-3.3706$ para esa entrada. Las otras 10000 entradas recorren las mismas operaciones.
+
+\paso{2. Seguir \texttt{calcular\_diferencia}.}
+Para orden 1, \texttt{range(orden+1,4)} produce $k=2,3$. Se inicia $\Delta=0$; primero se resta $2.06x^2$, luego se resta $-2.964x^3$. El segundo signo negativo produce una suma: $\Delta=-2.06x^2+2.964x^3$. Para orden 3, \texttt{range(4,4)} está vacío y el resultado sigue en cero.
+
+\paso{3. Seguir \texttt{calcular\_hierro}.}
+El ciclo exterior selecciona $k=1,2,3$ según el orden. El interior construye el corchete $\ln(1-x)+\sum_{j=1}^kx^j/j$. \texttt{pequeno = x < 0.1} es una máscara: una lista de verdaderos y falsos. \texttt{x[pequeno]} selecciona solo los puntos verdaderos. En esos lugares se reemplaza el corchete por la cola estable explicada antes. Finalmente se multiplica por $kc_k$ y se suma al hierro acumulado. El programa didáctico espera que $x$ sea un arreglo, como la malla que crea; no se diseñó como interfaz para escalares arbitrarios.
+
+\paso{4. Seguir \texttt{calcular\_coeficientes\_gamma} para $n=2$.}
+$\min(3,2)=2$, así que \texttt{range(1,3)} produce $k=1,2$. Para $k=1$, el producto es $1c_1b_{2-1}=c_1b_1$. Para $k=2$, es $2c_2b_{2-2}=2c_2b_0$. Se suman y dividen entre $n=2$. $b_0$ y $b_1$ ya existen porque se calcularon antes. Nunca se busca $b_{-1}$.
+
+\tema{e) Del cálculo a los archivos y a cada gráfica}
+\paso{1. Organizar resultados.}
+\texttt{calcular()} reúne las funciones anteriores. \texttt{metricas.append(...)} añade una fila por orden. El diccionario devuelto asocia nombres de texto con arreglos: \texttt{resultados["gamma"]} recupera los coeficientes y \texttt{resultados["g"]} las energías. En el diccionario \texttt{q}, la clave 5 corresponde a todo el polinomio $Q_5$ evaluado en la malla.
+
+\paso{2. Guardar una tabla.}
+\texttt{guardar\_tabla} abre el archivo en modo \texttt{"w"}, que lo crea o sustituye en la carpeta de resultados. Escribe primero la cabecera y después las filas. \texttt{with} asegura que el archivo se cierre. \texttt{zip(range(13), b)} empareja el índice 0 con $b_0$, el 1 con $b_1$, y así hasta 12.
+
+\paso{3. Dibujar dos paneles.}
+\texttt{plt.subplots(1,2,...)} crea una figura y dos ejes. \texttt{ejes[0].plot(x,valores)} dibuja los pares $(x_j,\mathrm{valores}_j)$ en el panel izquierdo. \texttt{ejes[1]} identifica el derecho. La etiqueta \texttt{label} nombra la curva; \texttt{legend()} muestra esos nombres. \texttt{set\_xlabel} y \texttt{set\_ylabel} escriben qué significa cada eje. \texttt{grid} solo añade líneas de guía.
+
+\paso{4. Qué se pasa a cada figura.}
+\begin{center}\small\begin{tabular}{lll}\toprule
+Archivo & Panel izquierdo & Panel derecho\\\midrule
+\texttt{actividad.png} & $P_N$ & $e^{P_N}$\\
+\texttt{errores.png} & $|P_N-F_3|$ & $100|e^{P_N-F_3}-1|$\\
+\texttt{termodinamica.png} & $H_N$ & $g_N^E/1000$\\
+\texttt{serie\_infinita.png} & $Q_m$ y $e^{F_3}$ & $100|Q_m/e^{F_3}-1|$\\\bottomrule
+\end{tabular}\end{center}
+Las figuras didácticas usan escalas lineales y muestran todos los órdenes, incluido el 0. Las figuras editoriales del PDF ajustan escalas y selección de curvas para destacar regiones de interés. Los cálculos son equivalentes; las presentaciones no son idénticas.
+
+\paso{5. Guardar y ejecutar.}
+\texttt{savefig} escribe la imagen; \texttt{dpi=180} indica resolución. \texttt{close} libera memoria. \texttt{main()} coordina cálculo, tablas y figuras. La condición \texttt{if \_\_name\_\_ == "\_\_main\_\_"} lo llama cuando se ejecuta el archivo; no lo llama al importarlo para pruebas. Cada instrucción del listado tiene un comentario inmediato que explica su finalidad.
+
+\tema{e) Código didáctico completo, con comentarios instrucción por instrucción}
+\textbf{Cómo copiarlo.} Preferir el archivo del repositorio, que conserva espacios, acentos y sangría. Los números del margen del listado son guías de lectura; no forman parte del código. Las líneas largas pueden partirse visualmente en el PDF sin representar instrucciones nuevas. El archivo completo se ejecuta con el comando indicado; no hay que agregar bloques que falten.
+\lstinputlisting{ejemplos/paso_a_paso.py}
+
+\input{documentos/capitulos/09_matlab.tex}
+
+\tema{Cómo funciona la reproducción editorial y cómo se comprueba}
+\paso{1. Ubicación de cada responsabilidad.}
+\texttt{src/feal/modelo.py} contiene las funciones matemáticas reutilizables. \texttt{reproducir.py} evalúa la malla, escribe tablas, produce figuras y llama a LaTeX. \texttt{desglose.py} escribe los pasos intermedios y los CSV de auditoría. El ejemplo didáctico hace explícitos los ciclos y acumulaciones que el módulo compacto expresa con sumas o funciones de NumPy.
+
+\paso{2. Equivalencia con la evaluación compacta.}
+El módulo reutilizable usa \texttt{np.polynomial.polynomial.polyval} para evaluar un polinomio. Por ejemplo,
+\[
+c_0+c_1x+c_2x^2+c_3x^3
+=c_0+x[c_1+x(c_2+xc_3)].
+\]
+Al distribuir los paréntesis interiores aparecen $c_2x+c_3x^2$; al multiplicar nuevamente por $x$ y sumar $c_1x$ aparecen $c_1x+c_2x^2+c_3x^3$. La forma anidada reduce operaciones. Puede diferir en los últimos bits por el orden de redondeo, pero representa el mismo polinomio que el ciclo didáctico.
+
+\paso{3. Tablas y texto sincronizados.}
+Los comandos \texttt{input} de LaTeX insertan las tablas generadas, incluidas las multiplicaciones de la recurrencia. Las figuras se leen de los PDF vectoriales calculados. LaTeX se ejecuta tres veces para resolver el índice y las referencias a páginas. El PDF final se escribe en \texttt{output/pdf/solucionario.pdf}.
+
+\paso{4. Verificar en vez de confiar solo en la apariencia.}
+\begin{verbatim}
+uv run --locked pytest
+\end{verbatim}
+Las pruebas verifican las derivadas mediante álgebra simbólica exacta, Gibbs-Duhem para cada orden, el hierro frente a integración numérica independiente, las métricas de referencia y la recurrencia frente a una expansión simbólica de la exponencial. También comparan el programa didáctico con el módulo reutilizable y verifican la estructura y operaciones de los archivos de desglose.
+
+\paso{5. Reproducibilidad.}
+\texttt{uv.lock} fija bibliotecas y \texttt{.python-version} el intérprete. Se fijan las fechas internas del PDF y se registran huellas SHA-256 en \texttt{output/manifiesto.json}. Las salidas del ejemplo didáctico se guardan aparte y no forman parte de ese manifiesto editorial. Las versiones de TeX Live y las fuentes dependen del sistema: no se promete identidad binaria entre plataformas diferentes. En el mismo entorno se compara una reconstrucción limpia y una segunda ejecución.
+
+\tema{Guía para responder las dudas que motivaron esta edición}
+\paso{«¿Dónde está Taylor?»}
+En la construcción $c_k=F^{(k)}(0)/k!$, con las derivadas calculadas término a término y evaluadas en cero. La parte previa deriva la función que se va a desarrollar; esa parte previa no debe confundirse con Taylor.
+
+\paso{«¿Por qué sale lo mismo que ya estaba?»}
+Porque el modelo del logaritmo es un polinomio cúbico. Su Taylor de grado tres lo recupera. Cortar antes sí crea una aproximación con error calculable.
+
+\paso{«¿De dónde toma los datos para las gráficas?»}
+De evaluar las ecuaciones en una malla que elegimos. Solo los parámetros de partida proceden del artículo; los miles de puntos no son miles de observaciones experimentales.
+
+\paso{«¿De dónde toma los coeficientes de la serie infinita?»}
+De $b_0=e^{c_0}$ y la recurrencia que se deduce al igualar potencias en $\gamma'=F_3'\gamma$. Se muestran todos los coeficientes utilizados, con sus productos, sumas y divisiones.
+
+\paso{«¿El fragmento corto era todo el programa?»}
+No. El fragmento del PDF original era solo un núcleo. Esta edición incorpora un archivo ejecutable completo y su listado comentado; incluye las instrucciones para generar y guardar las gráficas.
+
+\paso{«¿Puedo reproducir un número específico?»}
+Sí: identificar si es $P_N$, $\gamma_N$, $H_N$, $g_N^E$ o $Q_m$; localizar su definición; sustituir el $x$ correspondiente; seguir el ejemplo y consultar el CSV. Para $P_N$ y sus errores, \texttt{desglose\_malla.csv} deja explícitos los términos y sus combinaciones. Para la serie infinita, consultar \texttt{coeficientes\_gamma.csv} y \texttt{terminos\_gamma\_extremo.csv}.
+
+\tema{Fuentes y correspondencia con el examen}
+[1] Ishfaq, M.; Pande, M. M. (2025). \textit{Thermodynamic analysis of Fe-Al-O system using Redlich-Kister (R-K) polynomial and Wagner's Taylor series expansion}. The Journal of Chemical Thermodynamics, 202, 107415. DOI: \href{https://doi.org/10.1016/j.jct.2024.107415}{10.1016/j.jct.2024.107415}. Copia original: \texttt{referencias/articulo.pdf}. Parámetros: tabla 1, p. 5. Modelo y relaciones: ecuaciones (16)--(26), p. 6. Composiciones de referencia: tabla 2, p. 7. Reducción binaria: sección 3.2.
+
+[2] Universidad Veracruzana, Facultad de Ciencias Químicas. \textit{Primer Examen Parcial: Matemáticas Aplicadas}. Maestría en Ingeniería Química, 6 de octubre de 2026. Copia: \texttt{referencias/parcial.pdf}.
+
+[3] \textit{Solucionario razonado: Series de Taylor y termodinámica del sistema Fe-Al-O}. Documento proporcionado, fechado el 7 de octubre de 2026. Se conserva sin cambios en la carpeta \texttt{referencias/}, con el nombre \texttt{solucionario\_original.pdf}. Esta edición amplía sus explicaciones, reconstruye sus resultados y agrega código íntegro y desgloses; no reproduce su maquetación original.
+
+\begin{center}\begin{tabular}{lp{0.76\linewidth}}\toprule
+Inciso & Contenido desarrollado\\\midrule
+a & Fenómeno de desoxidación, variables, actividades, unidades y aproximación binaria.\\
+b & Elección de Taylor, función a desarrollar, centro en cero y diferencia con Fourier.\\
+c & Derivación parcial molar, álgebra del modelo, derivadas de Taylor, factoriales y Gibbs-Duhem.\\
+d & Truncamientos, ejemplos, errores, máximos, RMSE y tolerancias.\\
+e & Programa completo, instrucciones de ejecución, gráficas, código comentado y pruebas.\\
+f & Interpretación de tendencias, energía, estabilidad y límites del modelo.\\
+g & Conclusiones fundamentadas, condiciones de uso y límites de las afirmaciones.\\\bottomrule
+\end{tabular}\end{center}
+
+\textbf{Convención final.} Se usa punto decimal para coincidir con Python y con las cifras de las ecuaciones. Los valores del texto se redondean solo al imprimir. Los originales se mantienen íntegros y sus huellas constan en \texttt{referencias/SHA256SUMS}.

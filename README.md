@@ -1,8 +1,10 @@
 # Taylor y termodinámica de Fe-Al: solucionario reproducible
 
-Desarrollo en español de los incisos a–g del primer parcial de Matemáticas Aplicadas. Reconstruye el contenido matemático del solucionario proporcionado, con una nueva maquetación editable. Calcula las aproximaciones de Taylor, sus errores, la respuesta del hierro mediante Gibbs–Duhem y la energía de Gibbs de exceso. Incluye una extensión al Taylor directo de la exponencial.
+Desarrollo en español de los incisos a–g del primer parcial de Matemáticas Aplicadas. Reconstruye el contenido matemático del solucionario proporcionado, con una nueva maquetación editable y una explicación desde cero, paso a paso. Calcula las aproximaciones de Taylor, sus errores, la respuesta del hierro mediante Gibbs–Duhem y la energía de Gibbs de exceso. Incluye una extensión al Taylor directo de la exponencial.
 
-**Documento listo para leer:** [solucionario generado](output/pdf/solucionario.pdf).
+**Documento listo para leer:** [solucionario generado, 60 páginas](output/pdf/solucionario.pdf). Incluye procedencia de cada dato, reglas básicas, todas las derivadas de Taylor, sustituciones, factoriales, cuentas de error, integración de Gibbs–Duhem y los programas completos en Python y MATLAB comentados instrucción por instrucción.
+
+**Para empezar con el código:** [Python didáctico completo](ejemplos/paso_a_paso.py) · [MATLAB completo](matlab/paso_a_paso.m).
 
 ## Reproducir
 
@@ -31,6 +33,37 @@ uv run --locked feal --solo-datos
 
 No se requiere recuperar archivos de `/home/ieqr/Downloads`: las tres entradas se incluyen en `referencias/`. Los comandos pueden ejecutarse de nuevo sin intervención manual. Se deben ejecutar desde un clon o copia del repositorio; el programa localiza la raíz a partir de su archivo fuente.
 
+## Ejecutar los programas didácticos
+
+Python, desde la raíz del repositorio:
+
+```bash
+uv sync --locked
+uv run --locked python ejemplos/paso_a_paso.py
+```
+
+Genera tablas y cuatro gráficas en `output/didactico/`, sin necesitar LaTeX. Todas las funciones están incluidas; el script no importa el paquete interno `feal`.
+
+MATLAB, con la raíz del repositorio como carpeta actual:
+
+```matlab
+addpath('matlab');
+resultados = paso_a_paso;
+resultados.metricas
+```
+
+Genera tablas, la malla completa y cuatro gráficas en `output/matlab/`. El archivo incluye todas las funciones auxiliares y no requiere toolboxes adicionales. La función devuelve también una estructura para explorar los valores en la consola. Los índices de MATLAB empiezan en 1: `C(k+1)` representa el coeficiente matemático `c_k`.
+
+La compatibilidad se validó con **GNU Octave 7.3.0** en un contenedor Debian; no se ejecutó el motor propietario MATLAB, que no está instalado en este entorno. Para repetir esa comprobación:
+
+```bash
+docker build -f Dockerfile.octave -t rey-octave .
+docker run --rm --user "$(id -u):$(id -g)" -v "$PWD:/proyecto" rey-octave
+uv run --locked python pruebas/verificar_matlab.py
+```
+
+El verificador contrasta los 10 001 puntos y las 20 columnas calculadas, los 13 coeficientes de la serie infinita y las dos tablas de métricas. Las tolerancias están declaradas en el archivo del verificador. En sistemas sin `id`, puede omitirse `--user`; las instrucciones de MATLAB no requieren Docker.
+
 ## Archivos
 
 | Ruta | Contenido |
@@ -38,7 +71,10 @@ No se requiere recuperar archivos de `/home/ieqr/Downloads`: las tres entradas s
 | `referencias/` | Los tres PDF originales, sin modificaciones, y sus huellas SHA-256 |
 | `src/feal/modelo.py` | Funciones numéricas y parámetros con unidades |
 | `src/feal/reproducir.py` | Generación de tablas, gráficas y PDF |
-| `documentos/solucionario.tex` | Desarrollo completo en español, editable |
+| `src/feal/desglose.py` | Operaciones intermedias, recurrencia y registro de bisección |
+| `ejemplos/paso_a_paso.py` | Programa Python completo, comentado por instrucción |
+| `matlab/paso_a_paso.m` | Programa MATLAB completo, comentado por instrucción |
+| `documentos/solucionario.tex` y `documentos/capitulos/` | Desarrollo completo en español, editable |
 | `pruebas/test_modelo.py` | Comprobaciones algebraicas y numéricas independientes |
 | `output/datos/` | Malla completa, métricas, composiciones, extensión y resumen JSON |
 | `output/figuras/` | Figuras vectoriales PDF y vistas PNG |
@@ -61,7 +97,7 @@ Los resultados intermedios se regeneran y se excluyen de Git. El PDF final se co
 
 Las pruebas contrastan la derivación parcial molar con álgebra simbólica exacta, verifican Gibbs–Duhem para todos los órdenes y comparan la fórmula del hierro con cuadratura de Gauss–Legendre independiente. También comprueban las métricas del solucionario original, la recurrencia de la exponencial y las fronteras de tolerancia.
 
-Validación realizada: 16 pruebas aprobadas; PDF de siete páginas revisado visualmente; reconstrucción desde una copia limpia con un entorno virtual nuevo. Todas las huellas de los resultados coincidieron, incluido el PDF. La receta Docker y el flujo remoto de GitHub Actions se incluyen, pero no se ejecutaron durante esta validación local.
+Validación de esta edición: 24 pruebas aprobadas, ejecución de los programas didácticos Python y MATLAB compatible, y comparación de todas las columnas de MATLAB/Octave con Python. El PDF se revisa visualmente después de compilar. La reproducción editorial se verifica también desde una copia limpia y mediante una segunda ejecución. La receta `Dockerfile.octave` se ejecutó; el `Dockerfile` de generación editorial se conserva como alternativa documentada.
 
 Resultados de control:
 
@@ -79,9 +115,21 @@ mkdir -p tmp/pdfs
 pdftoppm -scale-to 1400 -png output/pdf/solucionario.pdf tmp/pdfs/pagina
 ```
 
+## Auditar cada cuenta
+
+Después de `uv run --locked feal`:
+
+- `output/datos/desglose_malla.csv`: 40 004 filas, una por composición y orden, con potencias, cuatro productos, suma, referencia, diferencia, cuadrado del error y porcentaje.
+- `output/datos/coeficientes_gamma.csv`: productos, suma y resultado de la recurrencia para los coeficientes del 0 al 12.
+- `output/datos/terminos_gamma_extremo.csv`: cada potencia, término y suma acumulada del Taylor directo en `x = 0.3872`.
+- `output/datos/biseccion.csv`: 70 iteraciones por orden, con extremos, punto medio, error y decisión.
+- Las tablas insertadas en el PDF se generan desde estos mismos cálculos. Los números se redondean solo para mostrarlos.
+
+La malla se elige para evaluar ecuaciones: sus puntos **no son mediciones experimentales**. Los coeficientes de la serie infinita se deducen del polinomio publicado mediante la recurrencia; no se toman de una tabla adicional del artículo.
+
 ## Reproducibilidad y automatización
 
-Python y sus dependencias están fijados. Se fija `SOURCE_DATE_EPOCH` y se eliminan fechas variables de las figuras PDF; dos ejecuciones con las mismas herramientas producen los mismos resultados. `output/manifiesto.json` permite contrastar sus huellas.
+Python y sus dependencias están fijados. Se fija `SOURCE_DATE_EPOCH` y se eliminan fechas variables de las figuras PDF; dos ejecuciones con las mismas herramientas producen los mismos resultados. `output/manifiesto.json` permite contrastar sus huellas. Excluye las carpetas `output/didactico/` y `output/matlab/`, que contienen ejecuciones complementarias; se contrastan numéricamente, no por bytes.
 
 La versión y las fuentes de TeX Live dependen del sistema. No se garantiza igualdad byte por byte entre sistemas operativos o distribuciones diferentes de LaTeX; sí se fijan el modelo, los datos de entrada, la malla y las dependencias numéricas. El `Dockerfile` proporciona una receta Linux para instalar las herramientas; la imagen base y los paquetes del sistema no están fijados por digest, por lo que tampoco constituye una imagen archivada bit a bit.
 

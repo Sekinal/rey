@@ -1,0 +1,7 @@
+# Entorno libre para comprobar compatibilidad del programa MATLAB.
+# No contiene MATLAB ni sustituye una validación en su motor propietario.
+FROM debian:bookworm-slim
+RUN apt-get update && apt-get install -y --no-install-recommends octave gnuplot-nox ghostscript fonts-freefont-otf ca-certificates && rm -rf /var/lib/apt/lists/*
+WORKDIR /proyecto
+ENV GNUTERM=pngcairo LANG=C.UTF-8 LC_ALL=C.UTF-8 XDG_CACHE_HOME=/tmp/octave-cache
+CMD ["octave", "--no-gui", "--quiet", "--eval", "addpath('matlab'); paso_a_paso;"]

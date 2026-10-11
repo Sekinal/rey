@@ -1,0 +1,173 @@
+\tema{d) Del ejemplo a todos los puntos de cálculo}
+\paso{1. Construir la malla sin recurrir a una tabla experimental.}
+Elegimos $M=10001$ puntos entre 0 y 0.3872. Entre 10001 puntos hay 10000 separaciones, por eso
+\[
+h=\frac{0.3872-0}{10001-1}=\frac{0.3872}{10000}=0.00003872.
+\]
+Numeramos desde $j=0$ hasta $j=10000$: $x_j=0+jh$. Los primeros son $x_0=0$, $x_1=0.00003872$, $x_2=0.00007744$. El último es $x_{10000}=10000(0.00003872)=0.3872$. Python usa \texttt{linspace(0, 0.3872, 10001)} para generar esa malla.
+
+\paso{2. Repetir exactamente las operaciones del ejemplo.}
+Para cada $x_j$: calcular $x_j^2$, $x_j^3$, los cuatro productos $c_kx_j^k$ y las cuatro sumas acumuladas $P_N(x_j)$. Después calcular las exponenciales y las actividades. No se buscan nuevos coeficientes para cada punto.
+
+\paso{3. Ver todos los productos de las composiciones ilustrativas.}
+La tabla siguiente se genera desde el programa, sin teclear manualmente sus resultados:
+\begin{center}\small\input{output/tablas/productos.tex}\end{center}
+Para obtener $P_2$ de una fila se suman sus tres primeros productos; para $P_3$ se suman los cuatro.
+\begin{center}\input{output/tablas/composiciones.tex}\end{center}
+
+\paso{4. Localizar todas las cuentas repetidas.}
+\texttt{output/datos/desglose\_malla.csv} contiene una fila por composición y orden: 10001 composiciones por 4 órdenes, es decir, 40004 filas. Guarda las potencias, productos, sumas, diferencia, valor absoluto, cuadrado del error y error relativo. Así cada resultado agregado se puede reconstruir sin transcribir decenas de miles de filas al PDF.
+
+Los decimales impresos se redondean para lectura. El programa conserva la precisión de punto flotante y no reutiliza los valores ya redondeados del documento.
+
+\tema{d) Error absoluto: restar primero, tomar valor absoluto después}
+\paso{1. Fijar la referencia y el signo de la resta.}
+La referencia es $F_3$. Definimos $\Delta_N=P_N-F_3$; puede ser positiva o negativa. El error absoluto es $E_N=|\Delta_N|$. El valor absoluto elimina el signo: $|-2|=2$ y $|2|=2$.
+
+\paso{2. Restar para orden 0.}
+\begin{align*}
+\Delta_0&=-3.8685-[-3.8685+4.773x+2.06x^2-2.964x^3]\\
+&=-3.8685+3.8685-4.773x-2.06x^2+2.964x^3\\
+&=-4.773x-2.06x^2+2.964x^3.
+\end{align*}
+En nuestro intervalo, $4.773+x(2.06-2.964x)>0$, pues $2.06-2.964(0.3872)>0$. Por tanto $\Delta_0\leq0$ y $E_0=4.773x+2.06x^2-2.964x^3$.
+
+\paso{3. Restar para orden 1.}
+Los términos constante y lineal se cancelan:
+\[
+\Delta_1=(-3.8685+4.773x)-F_3=-2.06x^2+2.964x^3=-x^2(2.06-2.964x).
+\]
+Como el paréntesis es positivo en el intervalo, $E_1=x^2(2.06-2.964x)$.
+
+\paso{4. Restar para órdenes 2 y 3.}
+\[
+\Delta_2=(-3.8685+4.773x+2.06x^2)-F_3=2.964x^3\geq0,
+\]
+por lo que $E_2=2.964x^3$. Para orden 3, $\Delta_3=F_3-F_3=0$, así que $E_3=0$.
+
+\paso{5. Hacer las restas en $x=0.1$.}
+\begin{align*}
+\Delta_0&=-3.8685-(-3.373564)=-0.494936,&E_0&=0.494936,\\
+\Delta_1&=-3.3912-(-3.373564)=-0.017636,&E_1&=0.017636,\\
+\Delta_2&=-3.3706-(-3.373564)=0.002964,&E_2&=0.002964,\\
+\Delta_3&=-3.373564-(-3.373564)=0,&E_3&=0.
+\end{align*}
+Un signo negativo indica subestimación del logaritmo; uno positivo, sobreestimación. Como la exponencial es creciente, conserva el sentido de esa comparación.
+
+\tema{d) Error del coeficiente: por qué aparece otra exponencial}
+\paso{1. Escribir la definición de error relativo porcentual.}
+El coeficiente aproximado es $\gamma_N=e^{P_N}$ y el de referencia es $\gamma_{\mathrm{ref}}=e^{F_3}>0$. Definimos
+\[
+e_{\gamma,N}=100\frac{|\gamma_N-\gamma_{\mathrm{ref}}|}{\gamma_{\mathrm{ref}}}.
+\]
+Dividir entre la referencia expresa el tamaño del error en relación con ella. Multiplicar por 100 lo convierte a porcentaje.
+
+\paso{2. Sustituir y simplificar sin saltos.}
+\begin{align*}
+e_{\gamma,N}
+&=100\frac{|e^{P_N}-e^{F_3}|}{e^{F_3}}
+=100\left|\frac{e^{P_N}}{e^{F_3}}-\frac{e^{F_3}}{e^{F_3}}\right|\\
+&=100|e^{P_N-F_3}-1|=100|e^{\Delta_N}-1|.
+\end{align*}
+Usamos $e^a/e^b=e^{a-b}$ y $e^{F_3}/e^{F_3}=1$. No es correcto llamar a $|P_N-F_3|$ ``porcentaje de error de $\gamma$''.
+
+\paso{3. Cuenta numérica completa en $x=0.1$.}
+\input{output/tablas/errores_ejemplo.tex}
+
+\paso{4. Diferencia entre dos medidas.}
+El error absoluto de $P_1$ es $0.017636$, mientras que su error relativo en $\gamma$ es el porcentaje anterior. Son magnitudes diferentes. Para $\Delta$ muy pequeño, $e^\Delta-1\simeq\Delta$, pero eso es una aproximación local, no una igualdad universal.
+
+\paso{5. Evaluación estable.}
+El programa usa \texttt{expm1(delta)}, que calcula $e^\Delta-1$ con buena precisión cuando $\Delta$ es cercano a cero. También obtiene $\Delta_N$ sumando los términos omitidos con signo opuesto. Restar dos números casi iguales, $P_N-F_3$, puede perder cifras por cancelación; sumar directamente lo omitido evita esa resta.
+
+\tema{d) Métricas globales: máximo y RMSE, operación por operación}
+\paso{1. Error máximo.}
+Calculamos $E_{N,j}=|P_N(x_j)-F_3(x_j)|$ para cada punto y elegimos el mayor. Eso significa $E_{\max,N}=\max_{0\leq j\leq10000} E_{N,j}$. No sumamos los errores para esta métrica.
+
+\paso{2. RMSE: elevar, sumar, dividir y sacar raíz.}
+RMSE significa raíz del promedio de los errores al cuadrado:
+\[
+S_N=\sum_{j=0}^{10000}\Delta_{N,j}^2,\qquad
+\mathrm{MSE}_N=\frac{S_N}{10001},\qquad
+\mathrm{RMSE}_N=\sqrt{\mathrm{MSE}_N}.
+\]
+Elevar al cuadrado hace positivas las contribuciones; así errores de signo opuesto no se cancelan. Dividir entre 10001 da el promedio. La raíz devuelve la escala original del error.
+
+\paso{3. Ejemplo pequeño para comprender la operación.}
+Supongamos, solo para practicar, errores $0$, $0.01$, $-0.02$. Sus cuadrados son $0$, $0.0001$, $0.0004$. La suma es $0.0005$; el promedio es $0.0005/3\simeq0.0001666667$; la raíz es $0.01290994$. El máximo absoluto es $0.02$. Este ejemplo de tres datos no sustituye la malla real.
+
+\paso{4. Sumas intermedias de la malla real.}
+\begin{center}\small\input{output/tablas/sumas_error.tex}\end{center}
+Cada suma usa los 10001 cuadrados guardados en el CSV. El programa calcula todos los términos; la tabla muestra el resultado de agregarlos.
+
+\paso{5. Resultados finales.}
+\begin{center}\input{output/tablas/metricas.tex}\end{center}
+Para cuantificar el cambio de RMSE de orden 1 a 2 se calcula
+\[
+100\frac{0.074787-0.065041}{0.074787}\simeq13.0\,\%.
+\]
+Para el aumento del error máximo: $100(0.172062-0.136781)/0.136781\simeq25.8\,\%$. Los números mostrados están redondeados; las métricas del programa usan todos sus decimales.
+
+\tema{d) Por qué agregar un término puede empeorar el máximo}
+\paso{1. Cerca de cero.}
+$E_1=2.06x^2-2.964x^3=x^2(2.06-2.964x)$. Al acercarse $x$ a cero, el paréntesis se acerca a 2.06, de modo que $E_1$ decrece como $x^2$. En cambio $E_2=2.964x^3$ decrece como $x^3$. Esto se escribe $E_1=O(x^2)$ y $E_2=O(x^3)$: describe el orden de disminución local.
+
+\paso{2. Buscar dónde se igualan los errores.}
+Para $x>0$, planteamos $E_1=E_2$:
+\begin{align*}
+2.06x^2-2.964x^3&=2.964x^3,\\
+2.06x^2&=2.964x^3+2.964x^3=5.928x^3,\\
+2.06&=5.928x,\qquad \text{dividiendo entre }x^2>0,\\
+x&=\frac{2.06}{5.928}\simeq0.347503374.
+\end{align*}
+$x=0$ también iguala los errores, pero se separó antes de dividir. Para $x>0.347503374$ dentro del intervalo, $E_2>E_1$.
+
+\paso{3. Explicación de los signos.}
+El término $+2.06x^2$ sube el valor y el término $-2.964x^3$ lo baja. Al omitir ambos, parte de sus efectos opuestos se cancela. Al retener solo el positivo, se pierde esa compensación. Por eso mayor grado no garantiza menor error en todos los puntos de un intervalo finito.
+
+\paso{4. Dónde están los máximos de $E_1$ y $E_2$.}
+Derivamos: $E_1'=4.12x-8.892x^2=x(4.12-8.892x)$. En $0<x\leq0.3872$, el paréntesis es positivo porque $4.12-8.892(0.3872)>0$. Entonces $E_1$ aumenta y su máximo está en el extremo. $E_2'=8.892x^2>0$ para $x>0$, así que también aumenta. $E_0'=F_3'>0$ en este intervalo, como se comprueba más adelante. Para $E_3=0$, todos los puntos comparten el máximo cero.
+
+\paso{5. Una comparación distinta de la del artículo.}
+Aquí $P_2$ es el corte cuadrático del mismo cúbico. El formalismo cuadrático independiente de los autores tiene su propia construcción. No deben identificarse ambas comparaciones.
+
+\tema{d) Tolerancia de 1 por ciento: resolver la desigualdad}
+\paso{1. Qué buscamos.}
+Queremos el intervalo que empieza en cero y satisface $e_{\gamma,N}\leq1$. Usamos el error del coeficiente, no el del logaritmo.
+
+\paso{2. Orden 2: solución algebraica.}
+Como $\Delta_2=2.964x^3\geq0$, $|e^{\Delta_2}-1|=e^{\Delta_2}-1$:
+\begin{align*}
+100(e^{2.964x^3}-1)&\leq1,\\
+e^{2.964x^3}-1&\leq0.01,\\
+e^{2.964x^3}&\leq1.01,\\
+2.964x^3&\leq\ln(1.01),\\
+x^3&\leq\frac{\ln(1.01)}{2.964},\\
+x&\leq\left[\frac{\ln(1.01)}{2.964}\right]^{1/3}\simeq\LimiteCuadratico.
+\end{align*}
+Aplicar $\ln$ y raíz cúbica conserva el sentido porque ambas funciones son crecientes en los valores utilizados.
+
+\paso{3. Orden 1: ecuación de la frontera.}
+$\Delta_1=-E_1\leq0$; por ello $|e^{-E_1}-1|=1-e^{-E_1}$. En la frontera:
+\[
+100(1-e^{-E_1})=1\Rightarrow e^{-E_1}=0.99
+\Rightarrow -E_1=\ln(0.99)\Rightarrow E_1=-\ln(0.99).
+\]
+Sustituimos $E_1$: $2.06x^2-2.964x^3=-\ln(0.99)$. Resolvemos numéricamente; como $E_1$ aumenta en el intervalo, hay una sola frontera.
+
+\paso{4. Bisección: instrucciones exactas.}
+Empezamos con extremo inferior $l=0$ y superior $u=0.3872$. El punto medio es $m=(l+u)/2$. Si su error es menor o igual a 1\,\%, reemplazamos $l$ por $m$; si supera 1\,\%, reemplazamos $u$ por $m$. Repetimos 70 veces. Al dividir a la mitad el intervalo se encierra cada vez más la frontera. Cerca de la precisión de máquina, las últimas iteraciones pueden repetir el mismo número; no se obtienen 70 cifras correctas.
+
+La frontera lineal es $x\simeq\LimiteLineal$. La tabla siguiente muestra los primeros pasos; el CSV guarda las 70 iteraciones de cada orden.
+\begin{center}\scriptsize\input{output/tablas/biseccion.tex}\end{center}
+
+\tema{e) Leer las gráficas: qué representa cada eje}
+\begin{center}\includegraphics[width=\linewidth]{output/figuras/actividad.pdf}\end{center}
+\textbf{Figura 1.} En ambas gráficas el eje horizontal es $x$, fracción molar de Al. A la izquierda, cada altura es $P_N(x)$, un logaritmo. A la derecha, cada altura es $e^{P_N(x)}$, el coeficiente. Las curvas se generan evaluando las fórmulas en la malla. No son curvas ajustadas aquí a mediciones. Orden 3 es la referencia.
+
+Para reconstruir un punto, elegir por ejemplo $x=0.1$: a la izquierda el punto cúbico tiene altura $-3.373564$; a la derecha, $e^{-3.373564}$. Unir puntos consecutivos permite visualizar el comportamiento, pero las operaciones que los producen son las mismas que en la cuenta manual.
+
+\begin{center}\includegraphics[width=\linewidth]{output/figuras/errores.pdf}\end{center}
+\textbf{Figura 2.} A la izquierda se representa $100|e^{\Delta_N}-1|$. La línea punteada indica 1\,\%. El eje vertical se limita a 21\,\% para distinguir órdenes 1 y 2; el orden 0 sale del recuadro. A la derecha se representa $|\Delta_N|$ con ambos ejes logarítmicos. Una malla geométrica separada de 1000 puntos positivos entre $10^{-6}$ y 0.3872 permite ver la región diluida. No se incluye cero porque $\ln0$ no existe. Orden 3 tampoco se dibuja allí: su error es cero.
+
+Una escala logarítmica coloca a distancias iguales cambios por factores, como $10^{-3}$, $10^{-2}$ y $10^{-1}$. Si $E\simeq Cx^p$, entonces $\ln E\simeq\ln C+p\ln x$; la pendiente en esta gráfica es $p$. Por eso se reconocen órdenes locales 1, 2 y 3 en los errores de $P_0,P_1,P_2$, respectivamente.
